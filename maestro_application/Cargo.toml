@@ -1,5 +1,5 @@
 [package]
-name = "instructions"
+name = "maestro_application"
 version = "0.1.0"
 authors = ["Savo Lazic <savo.lazic@oicr.on.ca>"]
 edition = "2018"
@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 roxmltree = "0.14.1"
+uuid = "0.8.2"
