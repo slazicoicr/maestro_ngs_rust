@@ -1,7 +1,6 @@
 use roxmltree::{Descendants, Document, Node};
 use std::collections::HashMap;
 use std::hash::Hash;
-use std::ops::IndexMut;
 use uuid::Uuid;
 
 const APP: &str = "Application";
@@ -18,8 +17,13 @@ const METHOD_DESIG: &str = "MethodDesignation";
 const PARAMS: &str = "Parameters";
 const PROGRAM_ID: &str = "ProgramID";
 const START_METHOD: &str = "StartupMethod";
+const VAR_COUNT: &str = "VariablesCount";
+const VAR_DESIG: &str = "VariableDesignation";
+const VAR_ID: &str = "VariableID";
 const VAR_POOL_DESIG: &str = "VariablesPoolDesignation";
 const VAR_POOL_ID: &str = "VariablesPoolID";
+const VAR_VALUE: &str = "Value";
+const VAR_TYPE: &str = "VariableType";
 
 pub struct Loader<'a> {
     raw: Document<'a>,
@@ -84,11 +88,41 @@ impl<'a> Loader<'a> {
         result
     }
 
+    fn build_variable(node: &Node) -> Variable {
+        let variable_fields = text_only_children(node);
+        let val_str = variable_fields.get(VAR_VALUE).unwrap();
+        let value = match *variable_fields.get(VAR_TYPE).unwrap() {
+            "2" => Some(VariableValue::Int(val_str.parse().unwrap())),
+            "3" => Some(VariableValue::String(val_str.to_string())),
+            "4" => {
+                let b = if *val_str == "0" {false} else {true};
+                Some(VariableValue::Bool(b))
+            },
+
+            _ => None
+        };
+        Variable {
+            designation: variable_fields.get(VAR_DESIG).unwrap().to_string(),
+            id: variable_fields.get(VAR_ID).unwrap().parse().unwrap(),
+            value: value.unwrap(),
+        }
+    }
+
     fn build_variables_pool(node: &Node) -> VariablesPool {
         let global_fields = text_only_children(node);
+        let var_count = node.descendants().find(|n| n.has_tag_name(VAR_COUNT)).unwrap();
+        let mut var_map = HashMap::new();
+
+        // The sibling element iterator includes itself, so skip it
+        for n in var_count.next_siblings().skip(1).filter(|n| n.is_element()) {
+            let var = Self::build_variable(&n);
+            var_map.insert(var.id, var);
+        }
+
         VariablesPool {
             designation: global_fields.get(VAR_POOL_DESIG).unwrap().parse().unwrap(),
             id: global_fields.get(VAR_POOL_ID).unwrap().parse().unwrap(),
+            variables: var_map,
         }
     }
 
@@ -117,8 +151,8 @@ impl<'a> Loader<'a> {
     }
 }
 
-/// The state of the Maestro application when it was saved. The Maestro export format will change, but
-/// this class will strive to provide a constant access API. A
+/// The state of the Maestro application when it was saved. The Maestro export format may change, but
+/// this class will strive to provide a constant access API.
 ///
 /// # Example
 ///
@@ -133,13 +167,15 @@ impl<'a> Loader<'a> {
 ///
 pub struct SavedApplication {
     start_method: Uuid,
-    global_variables: HashMap<Uuid, VariableType>,
+    global_variables: HashMap<Uuid, Variable>,
     layouts: HashMap<Uuid, VariablesPool>,
     methods: HashMap<Uuid, Method>,
 }
 
 impl SavedApplication {
-    fn set_global_variables(&mut self, pool: VariablesPool) {}
+    fn set_global_variables(&mut self, pool: VariablesPool) {
+        self.global_variables = pool.variables;
+    }
 
     fn add_layout(&mut self, pool: VariablesPool) {
         self.layouts.insert(pool.id, pool);
@@ -149,14 +185,17 @@ impl SavedApplication {
         self.methods.insert(method.id, method);
     }
 
+    /// The layout ids of the application
     pub fn ids_layout(&self) -> Vec<&Uuid> {
         self.layouts.keys().collect()
     }
 
+    /// The method ids of the application
     pub fn ids_methods(&self) -> Vec<&Uuid> {
         self.methods.keys().collect()
     }
 
+    /// The layout associated with the specified method
     pub fn layout_of_method(&self, method_id:Uuid) -> Option<Uuid> {
         match self.methods.get(&method_id) {
             Some(method) => Some(method.layout_id),
@@ -164,6 +203,7 @@ impl SavedApplication {
         }
     }
 
+    /// The name of the layout
     pub fn name_layout(&self, layout_id: Uuid) -> Option<&str> {
         match self.layouts.get(&layout_id) {
             Some(pool) => Some(&pool.designation),
@@ -171,6 +211,7 @@ impl SavedApplication {
         }
     }
 
+    /// The name of the method
     pub fn name_method(&self, method_id: Uuid) -> Option<&str> {
         match self.methods.get(&method_id) {
             Some(method) => Some(&method.designation),
@@ -178,12 +219,40 @@ impl SavedApplication {
         }
     }
 
+    /// The method that called at the start of the application
     pub fn start_method(&self) -> Uuid {
         self.start_method
     }
 }
 
-struct VariableType {}
+#[derive(Debug, Eq, PartialEq)]
+enum VariableValue {
+    Bool(bool),
+    Int(i32),
+    String(String),
+}
+
+#[derive(Debug, Eq, PartialEq)]
+struct VariablesPool {
+    designation: String,
+    id: Uuid,
+    variables: HashMap<Uuid, Variable>,
+}
+#[derive(Debug, Eq, PartialEq)]
+struct Variable {
+    designation: String,
+    id: Uuid,
+    value: VariableValue
+}
+
+#[derive(Debug, Eq, PartialEq)]
+struct Method {
+    designation: String,
+    id: Uuid,
+    layout_id: Uuid,
+    local_variables_pool: VariablesPool,
+    parameters: VariablesPool,
+}
 
 fn get_float_text(xml: &Node, tag: &str) -> f64 {
     xml.descendants()
@@ -239,21 +308,6 @@ fn text_only_children<'a, 'b>(node: &Node<'a, 'b>) -> HashMap<&'a str, &'a str> 
         }
     }
     result
-}
-
-#[derive(Debug, Eq, PartialEq)]
-struct VariablesPool {
-    designation: String,
-    id: Uuid,
-}
-
-#[derive(Debug, Eq, PartialEq)]
-struct Method {
-    designation: String,
-    id: Uuid,
-    layout_id: Uuid,
-    local_variables_pool: VariablesPool,
-    parameters: VariablesPool,
 }
 
 #[cfg(test)]
@@ -354,20 +408,36 @@ mod tests {
 
           <VariablesPoolID>BB37AAC5-102D-4367-B1BA-98B7D1E47EF0</VariablesPoolID>
 
-          <VariablesCount>0</VariablesCount>
+          <VariablesCount>1</VariablesCount>
+
+          <Variable1>
+
+            <VariableType>2</VariableType>
+
+            <VariableID>12A4FC48-6802-491A-ACE5-871B53197F12</VariableID>
+
+            <VariableDesignation>g_NumberOfTipBoxPerDeck</VariableDesignation>
+
+            <Value>1</Value>
+
+            <VariableDescription>The number of Tip Box per reserve deck. Current NGS configuration supports only one</VariableDescription>
+
+            <PermissibleValues>0-10</PermissibleValues>
+
+            <VariablePoolID>D2EEDFC1-22D6-40FF-8A5D-F81B0960238D</VariablePoolID>
+
+            <VariablePoolDesignation>GLOBAL Variables</VariablePoolDesignation>
+
+          </Variable1>
 
         </VariablesPool>
         "#;
         let doc = Document::parse(DATA).unwrap();
         let node = doc.root().first_element_child().unwrap();
         let var = Loader::build_variables_pool(&node);
-        assert_eq!(
-            var,
-            VariablesPool{
-                designation: "MainLayout".to_string(),
-                id: "BB37AAC5-102D-4367-B1BA-98B7D1E47EF0".parse().unwrap(),
-            }
-        )
+        assert_eq!(var.id, "BB37AAC5-102D-4367-B1BA-98B7D1E47EF0".parse().unwrap());
+        assert_eq!(var.designation, "MainLayout".to_string());
+        assert_eq!(var.variables.len(), 1);
     }
 
     #[test]
@@ -381,5 +451,34 @@ mod tests {
         assert_eq!(var.layout_id, "BB37AAC5-102D-4367-B1BA-98B7D1E47EF0".parse().unwrap());
         assert_eq!(var.local_variables_pool.id, "9DC99ADE-3702-4D6A-A34C-489E64D46183".parse().unwrap());
         assert_eq!(var.parameters.id, "68A3020C-9427-4E0E-9235-F8A40FF66969".parse().unwrap());
+    }
+
+    #[test]
+    fn variable_parsing() {
+        const DATA: &'static str = r#"<Variable2>
+
+          <VariableType>2</VariableType>
+
+          <VariableID>82ADDA04-FE60-4F14-B0C6-81AF2B5E524B</VariableID>
+
+          <VariableDesignation>g_ReservedTipBoxZOffset</VariableDesignation>
+
+          <Value>-10</Value>
+
+          <VariableDescription></VariableDescription>
+
+          <PermissibleValues>-9999999-9999999</PermissibleValues>
+
+          <VariablePoolID>D2EEDFC1-22D6-40FF-8A5D-F81B0960238D</VariablePoolID>
+
+          <VariablePoolDesignation>GLOBAL Variables</VariablePoolDesignation>
+
+        </Variable2>"#;
+        let doc = Document::parse(DATA).unwrap();
+        let node = doc.root().first_element_child().unwrap();
+        let var = Loader::build_variable(&node);
+        assert_eq!(var.designation, "g_ReservedTipBoxZOffset".to_string());
+        assert_eq!(var.id, "82ADDA04-FE60-4F14-B0C6-81AF2B5E524B".parse().unwrap());
+        assert_eq!(var.value, VariableValue::Int(-10));
     }
 }
