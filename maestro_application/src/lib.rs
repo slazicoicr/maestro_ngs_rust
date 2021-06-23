@@ -6,6 +6,13 @@ const APP: &str = "Application";
 const APP_BUILD: &str = "ExportedApplicationBuild";
 const APP_VERSION: &str = "ExportedApplicationVersion";
 const GLOBAL_VAR_POOL: &str = "GlobalVariablesPool";
+const INSTR_COMPARATOR: &str = "Comparator";
+const INSTR_COUNT: &str = "InstructionsCount";
+const INSTR_TEST_TYPE: &str = "DataTypeOfTest";
+const INSTR_DESIG: &str = "InstructionDesignation";
+const INSTR_DIRECT_VALUE: &str = "_DirectValue";
+const INSTR_IS_COMMENT: &str = "IsComment";
+const INSTR_VARIABLE: &str = "_Variable";
 const LAYOUT_ID: &str = "LayoutID";
 const LAYOUTS: &str = "Layouts";
 const LAYOUTS_COUNT: &str = "LayoutsCount";
@@ -13,6 +20,8 @@ const LOCAL_VAR_POOL: &str = "LocalVariablesPool";
 const METHODS: &str = "Methods";
 const METHODS_COUNT: &str = "MethodsCount";
 const METHOD_DESIG: &str = "MethodDesignation";
+const PARAM_TYPE: &str = "ParameterType";
+const PARAM_ID: &str = "ForParameter";
 const PARAMS: &str = "Parameters";
 const PROGRAM_ID: &str = "ProgramID";
 const START_METHOD: &str = "StartupMethod";
@@ -117,6 +126,24 @@ impl<'a> Loader<'a> {
         }
     }
 
+    fn build_parameter(node: &Node) -> Parameter {
+        let variable_fields = text_only_children(node);
+        let uuid_str = variable_fields.get("ForParameter").unwrap();
+        let val_type_str = variable_fields.get("ParameterType").unwrap();
+        let val_type = match *val_type_str {
+            "2" => VariableType::Float,
+            "3" => VariableType::String,
+            "4" => VariableType::Bool,
+            "7" => VariableType::Seconds,
+            _ => panic!("Unknown parameter type {}", val_type_str),
+        };
+        let val = Self::build_instruction_value(&node, val_type);
+        Parameter {
+            id: uuid_str.parse().unwrap(),
+            value: val,
+        }
+    }
+
     fn build_variables_pool(node: &Node) -> VariablesPool {
         let global_fields = text_only_children(node);
         let var_count = node
@@ -182,8 +209,12 @@ impl<'a> Loader<'a> {
         let method_fields = text_only_children(node);
         let mut local_var: Option<VariablesPool> = None;
         let mut params: Option<VariablesPool> = None;
+        let mut instructions = Vec::new();
+        let mut reached_instructions = false;
         for c in node.children() {
-            if c.has_tag_name(LOCAL_VAR_POOL) {
+            if reached_instructions && c.is_element() {
+                instructions.push(Self::build_instruction(&c));
+            } else if c.has_tag_name(LOCAL_VAR_POOL) {
                 local_var = Some(Self::build_variables_pool(
                     &c.first_element_child().unwrap(),
                 ));
@@ -191,6 +222,8 @@ impl<'a> Loader<'a> {
                 params = Some(Self::build_variables_pool(
                     &c.first_element_child().unwrap(),
                 ));
+            } else if c.has_tag_name(INSTR_COUNT) {
+                reached_instructions = true;
             }
         }
         Method {
@@ -199,6 +232,391 @@ impl<'a> Loader<'a> {
             layout_id: method_fields.get(LAYOUT_ID).unwrap().parse().unwrap(),
             local_variables_pool: local_var.unwrap(),
             parameters: params.unwrap(),
+            instructions,
+        }
+    }
+
+    fn build_instruction(node: &Node) -> Instruction {
+        let instr_fields = text_only_children(node);
+        let instr = instr_fields.get(INSTR_DESIG).unwrap();
+        let is_comment_str = instr_fields.get(INSTR_IS_COMMENT).unwrap();
+        let is_comment = if *is_comment_str == "0" { false } else { true };
+        let command = match *instr {
+            "Absolute Move" => Command::AbsoluteMove,
+            "Application Exit" => Command::ApplicationExit,
+            "Aspirate" => Self::build_instruction_aspirate(&node),
+            "Begin Loop" => Self::build_instruction_begin_loop(&node),
+            "End If" => Command::EndIf,
+            "End Loop" => Command::EndLoop,
+            "Eject Tips" => Self::build_instruction_load_tips(&node),
+            "Execute VSTA Macro" => Self::build_instruction_execute_vsta_macro(&node),
+            "Get Current Position Relative to Reference" => {
+                Command::GetCurrentPositionRelativeToReference
+            }
+            "Head Position" => Self::build_instruction_head_position(&node),
+            "Home P Axis" => Command::HomePAxis,
+            "If..Then" => Self::build_instruction_if_then(&node),
+            "Initialize" => Command::Initialize,
+            "Initialize System" => Command::InitializeSystem,
+            "Load Tips" => Self::build_instruction_load_tips(&node),
+            "Math Operation" => Self::build_instruction_math_operation(&node),
+            "P Axis Set Position" => Command::PAxisSetPosition,
+            "Pick" => Self::build_instruction_pick(&node),
+            "Relative Move" => Command::RelativeMove,
+            "REM" => Self::build_instruction_rem(&node),
+            "Run Method" => Self::build_instruction_run_method(&node),
+            "Run Shaker For Time" => Self::build_instruction_run_shaker_for_time(&node),
+            "Set Leg Light Intensity" => Self::build_instruction_set_light_intensity(&node),
+            "Set Speed" => Self::build_instruction_set_speed(&node),
+            "Set Temperature" => Self::build_instruction_set_temperature(&node),
+            "Set Travel Height" => Command::SetTravelHeight,
+            "Shaker On/Off" => Self::build_instruction_temperature_on_off(&node),
+            "Show Dialog" => Self::build_show_dialog(&node),
+            "Start Timer" => Command::StartTime,
+            "Stop Timer" => Command::StopTimer,
+            "String Operation" => Command::StringOperation,
+            "Temperature On/Off" => Self::build_instruction_shaker_on_off(&node),
+            "UnGrip" => Command::Ungrip,
+            _ => panic!("Unknown command {}", instr),
+        };
+        Instruction {
+            is_comment,
+            command,
+        }
+    }
+
+    fn build_operator(op: &str) -> Operator {
+        match op {
+            "(Assignment)" => Operator::Assign,
+            "-" => Operator::Minus,
+            "+" => Operator::Plus,
+            _ => panic!("Unknown math operator {}", op),
+        }
+    }
+
+    fn build_test_variable_type(var: &str) -> VariableType {
+        match var {
+            "0" => VariableType::String,
+            "1" => VariableType::Float,
+            "2" => VariableType::Bool,
+            _ => panic!("Unknown test variable type {}", var),
+        }
+    }
+
+    fn build_comparator(comp: &str) -> Comparator {
+        match comp {
+            "Equals" => Comparator::Equals,
+            "Greater than" => Comparator::GreaterThan,
+            "Greater than or equal to" => Comparator::GreaterThanOrEqual,
+            "Less than" => Comparator::LessThan,
+            "Less than or equal to" => Comparator::LessThanOrEqual,
+            _ => panic!("Unknown comparator {}", comp),
+        }
+    }
+
+    fn build_position_head(node: &Node) -> PositionHead {
+        let uuid_str = node
+            .descendants()
+            .find(|n| n.has_tag_name("DeckVariableID"))
+            .unwrap()
+            .text()
+            .unwrap();
+        let mut deck_parameter = None;
+        if uuid_str != "[[[[---NONE---]]]]" {
+            deck_parameter = Some(uuid_str.parse().unwrap());
+        }
+        let var_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("DeckLocation"))
+            .unwrap();
+        let deck_location = Self::build_instruction_value(&var_node, VariableType::String);
+        PositionHead { deck_parameter, deck_location }
+    }
+
+    fn build_instruction_aspirate(node: &Node) -> Command {
+        let position_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("DeckVariableID"))
+            .unwrap();
+        let position = position_node.text().unwrap();
+        let vol_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("VarVolume"))
+            .unwrap();
+        let vol = Self::build_instruction_value(&vol_node, VariableType::Float);
+        Command::Aspirate {
+            position: position.parse().unwrap(),
+            volume: vol,
+        }
+    }
+
+    fn build_instruction_begin_loop(node: &Node) -> Command {
+        let index_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("LoopIndexParam"))
+            .unwrap();
+        let index = Self::build_instruction_value(&index_node, VariableType::Int);
+        let from_node = index_node
+            .next_siblings()
+            .find(|n| n.has_tag_name("LoopFromParam"))
+            .unwrap();
+        let from = Self::build_instruction_value(&from_node, VariableType::Int);
+        let to_node = from_node
+            .next_siblings()
+            .find(|n| n.has_tag_name("LoopToParam"))
+            .unwrap();
+        let to = Self::build_instruction_value(&to_node, VariableType::Int);
+        let steps_node = to_node
+            .next_siblings()
+            .find(|n| n.has_tag_name("LoopStepParam"))
+            .unwrap();
+        let steps = Self::build_instruction_value(&steps_node, VariableType::Int);
+        Command::BeginLoop {
+            index,
+            from,
+            to,
+            steps,
+        }
+    }
+
+    fn build_instruction_execute_vsta_macro(node: &Node) -> Command {
+        let name = node
+            .descendants()
+            .find(|n| n.has_tag_name("MacroName"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string();
+        Command::ExecuteVSTAMacro { name }
+    }
+
+    fn build_instruction_head_position(node: &Node) -> Command {
+        let uuid_str = node
+            .descendants()
+            .find(|n| n.has_tag_name("DeckVariableID"))
+            .unwrap()
+            .text()
+            .unwrap();
+        let mut constant = None;
+        if uuid_str != "[[[[---NONE---]]]]" {
+            constant = Some(uuid_str.parse().unwrap());
+        }
+        let var_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("DeckLocation"))
+            .unwrap();
+        let variable = Self::build_instruction_value(&var_node, VariableType::String);
+        Command::HeadPosition { constant, variable }
+    }
+
+    fn build_instruction_if_then(node: &Node) -> Command {
+        let if_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("ControlInstr_IfThen"))
+            .unwrap();
+        let fields = text_only_children(&if_node);
+        let comparator = Self::build_comparator(fields.get(INSTR_COMPARATOR).unwrap());
+        let var_type = Self::build_test_variable_type(fields.get(INSTR_TEST_TYPE).unwrap());
+        let mut instr_val = Vec::new();
+        for c in if_node.children().filter(|n| n.is_element()).skip(2) {
+            instr_val.push(Self::build_instruction_value(&c, var_type));
+        }
+        let rhs = instr_val.pop().unwrap();
+        let lhs = instr_val.pop().unwrap();
+        Command::IfThen {
+            comparator,
+            lhs,
+            rhs,
+        }
+    }
+
+    fn build_instruction_load_tips(node: &Node) -> Command {
+        let pos_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("DeckLocation"))
+            .unwrap();
+        let position = Self::build_instruction_value(&pos_node, VariableType::String);
+        Command::LoadTips { position }
+    }
+
+    fn build_instruction_math_operation(node: &Node) -> Command {
+        let math_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("ControlInstr_MathOps"))
+            .unwrap();
+        let instr_type = VariableType::Float;
+        let mut operator = None;
+        let mut vars = Vec::new();
+        for c in math_node.children().filter(|n| n.is_element()) {
+            if c.has_tag_name("DataType") {
+                continue;
+            } else if c.has_tag_name("Operator") {
+                operator = Some(Self::build_operator(c.text().unwrap()));
+            } else {
+                vars.push(Self::build_instruction_value(&c, instr_type));
+            }
+        }
+        let rhs_op2 = vars.pop().unwrap();
+        let rhs_op1 = vars.pop().unwrap();
+        let lhs = vars.pop().unwrap();
+        Command::MathOperation {
+            operator: operator.unwrap(),
+            lhs,
+            rhs_op1,
+            rhs_op2,
+        }
+    }
+
+    fn build_instruction_pick(node: &Node) -> Command {
+        let pos_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("DeckLocation"))
+            .unwrap();
+        let position = Self::build_instruction_value(&pos_node, VariableType::String);
+        let z_off_node = pos_node
+            .next_siblings()
+            .find(|n| n.has_tag_name("ZPosOffset"))
+            .unwrap();
+        let z_offset = Self::build_instruction_value(&z_off_node, VariableType::Float);
+        Command::Pick { position, z_offset }
+    }
+
+    fn build_instruction_run_method(node: &Node) -> Command {
+        let call_method_uid = node
+            .descendants()
+            .find(|n| n.has_tag_name("CalledMethod"))
+            .unwrap()
+            .text()
+            .unwrap();
+
+        let param_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("Parameters"))
+            .unwrap();
+        let mut parameters = Vec::new();
+        for c in param_node.children().filter(|n| n.is_element()).skip(1) {
+            parameters.push(Self::build_parameter(&c));
+        }
+        Command::RunMethod {
+            method: call_method_uid.parse().unwrap(),
+            parameters,
+        }
+    }
+
+    fn build_instruction_run_shaker_for_time(node: &Node) -> Command {
+        let speed_node = node.descendants().find(|n| n.has_tag_name("Speed")).unwrap();
+        let speed = Self::build_instruction_value(&speed_node, VariableType::Float);
+        let timeout_node = speed_node.next_siblings().find(|n| n.has_tag_name("TimeoutDuration")).unwrap();
+        let timeout = Self::build_instruction_value(&timeout_node, VariableType::Seconds);
+        Command::RunShakerForTime{speed, timeout}
+    }
+
+    fn build_instruction_rem(node: &Node) -> Command {
+        let msg_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("CommentText"))
+            .unwrap();
+        let comment = match msg_node.text() {
+            Some(s) => s.to_string(),
+            None => "".to_string(),
+        };
+        Command::REM { comment }
+    }
+
+    fn build_instruction_set_light_intensity(node: &Node) -> Command {
+        let light_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("LegLightPercentage"))
+            .unwrap();
+        let percentage = Self::build_instruction_value(&light_node, VariableType::Float);
+        Command::SetLegLightIntensity { percentage }
+    }
+
+    fn build_instruction_set_speed(node: &Node) -> Command {
+        let speed_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("Speed"))
+            .unwrap();
+        let speed = Self::build_instruction_value(&speed_node, VariableType::Float);
+        Command::SetSpeed { speed }
+    }
+
+    fn build_instruction_shaker_on_off(node: &Node) -> Command {
+        let device = node
+            .descendants()
+            .find(|n| n.has_tag_name("DCCControl"))
+            .unwrap()
+            .text()
+            .unwrap()
+            .to_string();
+        let on_off_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("TurnOn"))
+            .unwrap();
+        let on_off = Self::build_instruction_value(&on_off_node, VariableType::Bool);
+        Command::ShakerOnOff{device, on_off}
+    }
+
+    fn build_show_dialog(node: &Node) -> Command {
+        let msg_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("DisplayText"))
+            .unwrap();
+        Command::ShowDialog {
+            text: msg_node.text().unwrap().to_string(),
+        }
+    }
+
+    fn build_instruction_temperature_on_off(node: &Node) -> Command {
+        let fields = text_only_children(&node);
+        let device = fields.get("DCCControl").unwrap().to_string();
+        let temp_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("TurnOn"))
+            .unwrap();
+        let on_off = Self::build_instruction_value(&temp_node, VariableType::Bool);
+        Command::TemperatureOnOff { device, on_off }
+    }
+
+    fn build_instruction_set_temperature(node: &Node) -> Command {
+        let device_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("DCCControl"))
+            .unwrap();
+        let device = device_node.text().unwrap().to_string();
+        let temp_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("Temperature"))
+            .unwrap();
+        let temperature = Self::build_instruction_value(&temp_node, VariableType::Float);
+        Command::SetTemperature {
+            device,
+            temperature,
+        }
+    }
+
+    fn build_instruction_value(node: &Node, value_type: VariableType) -> InstructionValue {
+        let fields = text_only_children(node);
+        let value_str = fields.get(INSTR_DIRECT_VALUE).unwrap();
+        let var_str = fields.get(INSTR_VARIABLE).unwrap();
+        let var: Option<Uuid> = if *var_str == "[[[[---NONE---]]]]" {
+            None
+        } else {
+            Some(var_str.parse().unwrap())
+        };
+        let value = match value_type {
+            VariableType::Bool => {
+                let b = if *value_str == "0" { false } else { true };
+                VariableValue::Bool(b)
+            }
+            VariableType::Float => VariableValue::Float(value_str.parse().unwrap()),
+            VariableType::Int => VariableValue::Int(value_str.parse().unwrap()),
+            VariableType::String => VariableValue::String(value_str.to_string()),
+            VariableType::Seconds => VariableValue::Seconds(value_str.parse().unwrap()),
+        };
+        InstructionValue {
+            variable: var,
+            direct: value,
         }
     }
 }
@@ -290,7 +708,6 @@ impl SavedApplication {
             Some(var) => Some(&var.value),
             None => None,
         }
-
     }
 }
 
@@ -298,8 +715,18 @@ impl SavedApplication {
 pub enum VariableValue {
     Bool(bool),
     Float(f64),
+    Int(u32),
     String(String),
     Seconds(u32),
+}
+
+#[derive(Debug, PartialEq, Copy, Clone)]
+pub enum VariableType {
+    Bool,
+    Float,
+    Int,
+    String,
+    Seconds,
 }
 
 struct VariablesPool {
@@ -333,6 +760,161 @@ struct Method {
     layout_id: Uuid,
     local_variables_pool: VariablesPool,
     parameters: VariablesPool,
+    instructions: Vec<Instruction>,
+}
+
+struct Instruction {
+    is_comment: bool,
+    command: Command,
+}
+
+enum Command {
+    AbsoluteMove,
+    ApplicationExit,
+    Aspirate {
+        position: Uuid,
+        volume: InstructionValue,
+    },
+    BeginLoop {
+        index: InstructionValue,
+        from: InstructionValue,
+        to: InstructionValue,
+        steps: InstructionValue,
+    },
+    CloseWorkbook,
+    Dispense {
+        position: Uuid,
+        volume: Option<f64>,
+    },
+    EjectTips {
+        position: InstructionValue,
+    },
+    EndIf,
+    EndLoop,
+    EndWhile,
+    ExecuteVSTAMacro {
+        name: String,
+    },
+    GetCurrentPositionRelativeToReference,
+    HeadPosition {
+        constant: Option<Uuid>,
+        variable: InstructionValue,
+    },
+    Home {
+        x: bool,
+        y: bool,
+        z: bool,
+    },
+    HomePAxis,
+    IfThen {
+        comparator: Comparator,
+        lhs: InstructionValue,
+        rhs: InstructionValue,
+    },
+    Initialize,
+    InitializeSystem,
+    LoadTips {
+        position: InstructionValue,
+    },
+    MathOperation {
+        operator: Operator,
+        lhs: InstructionValue,
+        rhs_op1: InstructionValue,
+        rhs_op2: InstructionValue,
+    },
+    Mix {
+        position: Uuid,
+    },
+    MoveMaterial {
+        from_position: Uuid,
+        to_position: Uuid,
+        z_offset: f64,
+    },
+    OpenWorkbook,
+    PAxisSetPosition,
+    Pick {
+        position: InstructionValue,
+        z_offset: InstructionValue,
+    },
+    Place {
+        position: Uuid,
+        z_offset: f64,
+    },
+    REM {
+        comment: String,
+    },
+    RelativeMove,
+    RunMethod {
+        method: Uuid,
+        parameters: Vec<Parameter>,
+    },
+    RunMacro,
+    RunShakerForTime {
+        speed: InstructionValue,
+        timeout: InstructionValue,
+    },
+    SetLegLightIntensity {
+        percentage: InstructionValue,
+    },
+    SetSpeed {
+        speed: InstructionValue,
+    },
+    SetTemperature {
+        device: String,
+        temperature: InstructionValue,
+    },
+    SetTravelHeight,
+    SetWorkingDirectory,
+    ShakerOnOff {
+        device: String,
+        on_off: InstructionValue,
+    },
+    ShowDialog {
+        text: String,
+    },
+    StartTime,
+    StopTimer,
+    StringOperation,
+    TemperatureOnOff {
+        device: String,
+        on_off: InstructionValue,
+    },
+    Ungrip,
+    VerticalPosition,
+    WhileLoop {
+        operator: Operator,
+        lhs: InstructionValue,
+        rhs: InstructionValue,
+    },
+}
+
+enum Operator {
+    Assign,
+    Minus,
+    Plus,
+}
+
+enum Comparator {
+    Equals,
+    GreaterThan,
+    GreaterThanOrEqual,
+    LessThan,
+    LessThanOrEqual,
+}
+
+struct InstructionValue {
+    direct: VariableValue,
+    variable: Option<Uuid>,
+}
+
+struct Parameter {
+    id: Uuid,
+    value: InstructionValue,
+}
+
+struct PositionHead {
+    deck_parameter: Option<Uuid>,
+    deck_location: InstructionValue,
 }
 
 fn get_float_text(xml: &Node, tag: &str) -> f64 {
@@ -438,7 +1020,10 @@ mod tests {
         // TODO: Lists all available instructions. Not part of test, remove after development
         let mut v = Vec::new();
         let loaded = Document::parse(&doc).unwrap();
-        for d in loaded.descendants().filter(|n| n.has_tag_name("InstructionDesignation")) {
+        for d in loaded
+            .descendants()
+            .filter(|n| n.has_tag_name("InstructionDesignation"))
+        {
             v.push(d.text())
         }
         v.sort();
@@ -654,5 +1239,45 @@ mod tests {
             .get(&"504C5661-C3EB-4CA2-9E7A-A974828D4C68".parse().unwrap())
             .unwrap();
         assert_eq!(loc.position, "D1".to_string());
+    }
+
+    #[test]
+    fn instruction_value_parsing() {
+        const DATA: &'static str = r#"<ZPosOffset>
+
+        <_DirectValue>0</_DirectValue>
+
+        <_Variable>[[[[---NONE---]]]]</_Variable>
+
+    </ZPosOffset>"#;
+        let doc = Document::parse(DATA).unwrap();
+        let node = doc.root().first_element_child().unwrap();
+        let r = Loader::build_instruction_value(&node, VariableType::Float);
+        assert_eq!(r.direct, VariableValue::Float(0.0));
+        assert_eq!(r.variable, None);
+    }
+
+    #[test]
+    fn parameter_parsing() {
+        const DATA: &'static str = r#"<Parameter1>
+
+        <ForParameter>4C09727C-1AF0-45D5-B756-BD21A058A7A7</ForParameter>
+
+        <ParameterType>2</ParameterType>
+
+        <_DirectValue>25</_DirectValue>
+
+        <_Variable>[[[[---NONE---]]]]</_Variable>
+
+    </Parameter1>"#;
+        let doc = Document::parse(DATA).unwrap();
+        let node = doc.root().first_element_child().unwrap();
+        let p = Loader::build_parameter(&node);
+        assert_eq!(
+            p.id,
+            "4C09727C-1AF0-45D5-B756-BD21A058A7A7".parse().unwrap()
+        );
+        assert_eq!(p.value.direct, VariableValue::Float(25.0));
+        assert_eq!(p.value.variable, None);
     }
 }
