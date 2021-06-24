@@ -113,7 +113,7 @@ impl<'a> Loader<'a> {
             "2" => Some(VariableValue::Float(val_str.parse().unwrap())),
             "3" => Some(VariableValue::String(val_str.to_string())),
             "4" => {
-                let b = if *val_str == "0" { false } else { true };
+                let b = Self::build_bool(&val_str);
                 Some(VariableValue::Bool(b))
             }
             "7" => Some(VariableValue::Seconds(val_str.parse().unwrap())),
@@ -240,36 +240,46 @@ impl<'a> Loader<'a> {
         let instr_fields = text_only_children(node);
         let instr = instr_fields.get(INSTR_DESIG).unwrap();
         let is_comment_str = instr_fields.get(INSTR_IS_COMMENT).unwrap();
-        let is_comment = if *is_comment_str == "0" { false } else { true };
+        let is_comment = Self::build_bool(*is_comment_str);
         let command = match *instr {
             "Absolute Move" => Command::AbsoluteMove,
             "Application Exit" => Command::ApplicationExit,
             "Aspirate" => Self::build_instruction_aspirate(&node),
             "Begin Loop" => Self::build_instruction_begin_loop(&node),
+            "CloseWorkbook" => Command::CloseWorkbook,
+            "Dispense" => Self::build_instruction_dispense(&node),
             "End If" => Command::EndIf,
             "End Loop" => Command::EndLoop,
-            "Eject Tips" => Self::build_instruction_load_tips(&node),
+            "End While" => Command::EndWhile,
+            "Eject Tips" => Self::build_instruction_eject_tips(&node),
             "Execute VSTA Macro" => Self::build_instruction_execute_vsta_macro(&node),
             "Get Current Position Relative to Reference" => {
                 Command::GetCurrentPositionRelativeToReference
             }
             "Head Position" => Self::build_instruction_head_position(&node),
+            "Home" => Self::build_instruction_home(&node),
             "Home P Axis" => Command::HomePAxis,
             "If..Then" => Self::build_instruction_if_then(&node),
             "Initialize" => Command::Initialize,
             "Initialize System" => Command::InitializeSystem,
             "Load Tips" => Self::build_instruction_load_tips(&node),
             "Math Operation" => Self::build_instruction_math_operation(&node),
+            "Mix" => Self::build_instruction_mix(&node),
+            "Move Material" => Self::build_instruction_move_material(&node),
+            "OpenWorkbook" => Command::OpenWorkbook,
             "P Axis Set Position" => Command::PAxisSetPosition,
             "Pick" => Self::build_instruction_pick(&node),
+            "Place" => Self::build_instruction_place(&node),
             "Relative Move" => Command::RelativeMove,
             "REM" => Self::build_instruction_rem(&node),
+            "RunMacro" => Command::RunMacro,
             "Run Method" => Self::build_instruction_run_method(&node),
             "Run Shaker For Time" => Self::build_instruction_run_shaker_for_time(&node),
             "Set Leg Light Intensity" => Self::build_instruction_set_light_intensity(&node),
             "Set Speed" => Self::build_instruction_set_speed(&node),
             "Set Temperature" => Self::build_instruction_set_temperature(&node),
             "Set Travel Height" => Command::SetTravelHeight,
+            "SetWorkingDirectory" => Command::SetWorkingDirectory,
             "Shaker On/Off" => Self::build_instruction_temperature_on_off(&node),
             "Show Dialog" => Self::build_show_dialog(&node),
             "Start Timer" => Command::StartTime,
@@ -277,6 +287,8 @@ impl<'a> Loader<'a> {
             "String Operation" => Command::StringOperation,
             "Temperature On/Off" => Self::build_instruction_shaker_on_off(&node),
             "UnGrip" => Command::Ungrip,
+            "Vertical Position" => Command::VerticalPosition,
+            "While Loop" => Self::build_instruction_while_loop(&node),
             _ => panic!("Unknown command {}", instr),
         };
         Instruction {
@@ -330,22 +342,62 @@ impl<'a> Loader<'a> {
             .find(|n| n.has_tag_name("DeckLocation"))
             .unwrap();
         let deck_location = Self::build_instruction_value(&var_node, VariableType::String);
-        PositionHead { deck_parameter, deck_location }
+
+        let z_offset_node = var_node
+            .next_siblings()
+            .find(|n| n.has_tag_name("ZPosOffset"))
+            .unwrap();
+        let z_offset = Self::build_instruction_value(&z_offset_node, VariableType::Float);
+        PositionHead {
+            deck_parameter,
+            deck_location,
+            z_offset,
+        }
+    }
+
+    fn build_load_eject_tips_head(node: &Node) -> LoadEjectTipsHead {
+        let uuid_str = node
+            .descendants()
+            .find(|n| n.has_tag_name("DeckVariableID"))
+            .unwrap()
+            .text()
+            .unwrap();
+        let mut deck_parameter = None;
+        if uuid_str != "[[[[---NONE---]]]]" {
+            deck_parameter = Some(uuid_str.parse().unwrap());
+        }
+        let var_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("DeckLocation"))
+            .unwrap();
+        let deck_location = Self::build_instruction_value(&var_node, VariableType::String);
+        LoadEjectTipsHead {
+            deck_parameter,
+            deck_location,
+        }
+    }
+
+    fn build_bool(s: &str) -> bool {
+        if s == "0" {
+            false
+        } else {
+            true
+        }
     }
 
     fn build_instruction_aspirate(node: &Node) -> Command {
         let position_node = node
             .descendants()
-            .find(|n| n.has_tag_name("DeckVariableID"))
+            .find(|n| n.has_tag_name("HeadPosInstr"))
             .unwrap();
-        let position = position_node.text().unwrap();
-        let vol_node = node
-            .descendants()
+        let position = Self::build_position_head(&position_node);
+        let vol_node = position_node
+            .next_siblings()
             .find(|n| n.has_tag_name("VarVolume"))
             .unwrap();
         let vol = Self::build_instruction_value(&vol_node, VariableType::Float);
         Command::Aspirate {
-            position: position.parse().unwrap(),
+            position_head: position,
             volume: vol,
         }
     }
@@ -379,6 +431,49 @@ impl<'a> Loader<'a> {
         }
     }
 
+    fn build_instruction_dispense(node: &Node) -> Command {
+        let dcc_control_node = node.descendants().find(|n| n.has_tag_name("DCCControl")).unwrap();
+        if dcc_control_node.text().unwrap() == "Sciclone" {
+            let all_node = node
+                .descendants()
+                .find(|n| n.has_tag_name("DispenseAll"))
+                .unwrap();
+            let dispense_all = Self::build_bool(all_node.text().unwrap());
+            let head_node = all_node
+                .next_siblings()
+                .find(|n| n.has_tag_name("HeadPosInstr"))
+                .unwrap();
+            let position_head = Self::build_position_head(&head_node);
+            let volume_node = head_node
+                .next_siblings()
+                .find(|n| n.has_tag_name("VarVolume"))
+                .unwrap();
+            let volume = Self::build_instruction_value(&volume_node, VariableType::Float);
+            Command::Dispense {
+                position_head,
+                dispense_all,
+                volume,
+            }
+        } else {
+            let volume_node = node.descendants().find(|n| n.has_tag_name("Volume")).unwrap();
+            let volume = Self::build_instruction_value(&volume_node, VariableType::Float);
+            let dispense_all_node = volume_node.next_siblings().find(|n| n.has_tag_name("DsAll")).unwrap();
+            let dispense_all = Self::build_bool(dispense_all_node.text().unwrap());
+            Command::DispenseMainArray {volume, dispense_all}
+        }
+    }
+
+    fn build_instruction_eject_tips(node: &Node) -> Command {
+        let pos_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("LoadEjectTipsInstr"))
+            .unwrap();
+        let l = Self::build_load_eject_tips_head(&pos_node);
+        Command::EjectTips {
+            load_eject_tips_head: l,
+        }
+    }
+
     fn build_instruction_execute_vsta_macro(node: &Node) -> Command {
         let name = node
             .descendants()
@@ -391,22 +486,22 @@ impl<'a> Loader<'a> {
     }
 
     fn build_instruction_head_position(node: &Node) -> Command {
-        let uuid_str = node
+        let pos_node = node
             .descendants()
-            .find(|n| n.has_tag_name("DeckVariableID"))
-            .unwrap()
-            .text()
+            .find(|n| n.has_tag_name("PositionHeadInstr"))
             .unwrap();
-        let mut constant = None;
-        if uuid_str != "[[[[---NONE---]]]]" {
-            constant = Some(uuid_str.parse().unwrap());
-        }
-        let var_node = node
-            .descendants()
-            .find(|n| n.has_tag_name("DeckLocation"))
-            .unwrap();
-        let variable = Self::build_instruction_value(&var_node, VariableType::String);
-        Command::HeadPosition { constant, variable }
+        let position_head = Self::build_position_head(&pos_node);
+        Command::HeadPosition { position_head }
+    }
+
+    fn build_instruction_home(node: &Node) -> Command {
+        let x_node = node.descendants().find(|n| n.has_tag_name("X")).unwrap();
+        let y_node = x_node.next_siblings().find(|n| n.has_tag_name("Y")).unwrap();
+        let z_node = y_node.next_siblings().find(|n| n.has_tag_name("Z")).unwrap();
+        let x = Self::build_bool(x_node.text().unwrap());
+        let y = Self::build_bool(y_node.text().unwrap());
+        let z = Self::build_bool(z_node.text().unwrap());
+        Command::Home{x, y, z}
     }
 
     fn build_instruction_if_then(node: &Node) -> Command {
@@ -433,10 +528,12 @@ impl<'a> Loader<'a> {
     fn build_instruction_load_tips(node: &Node) -> Command {
         let pos_node = node
             .descendants()
-            .find(|n| n.has_tag_name("DeckLocation"))
+            .find(|n| n.has_tag_name("LoadEjectTipsInstr"))
             .unwrap();
-        let position = Self::build_instruction_value(&pos_node, VariableType::String);
-        Command::LoadTips { position }
+        let l = Self::build_load_eject_tips_head(&pos_node);
+        Command::LoadTips {
+            load_eject_tips_head: l,
+        }
     }
 
     fn build_instruction_math_operation(node: &Node) -> Command {
@@ -467,18 +564,38 @@ impl<'a> Loader<'a> {
         }
     }
 
+    fn build_instruction_mix(node: &Node) -> Command {
+        let head_node = node.descendants().find(|n| n.has_tag_name("PositionHeadInstr")).unwrap();
+        let position_head = Self::build_position_head(&head_node);
+        Command::Mix{position_head}
+    }
+
+    fn build_instruction_move_material(node: &Node) -> Command {
+        let from_node = node.descendants().find(|n| n.has_tag_name("MoveMatPickInstr")).unwrap();
+        let from_head_node = from_node.descendants().find(|n| n.has_tag_name("PositionHeadInstr")).unwrap();
+        let from = Self::build_position_head(&from_head_node);
+        let to_node = from_node.next_siblings().find(|n| n.has_tag_name("MoveMatPlaceInstr")).unwrap();
+        let to_head_node = to_node.descendants().find(|n| n.has_tag_name("PositionHeadInstr")).unwrap();
+        let to = Self::build_position_head(&to_head_node);
+        Command::MoveMaterial{from, to}
+    }
+
     fn build_instruction_pick(node: &Node) -> Command {
         let pos_node = node
             .descendants()
-            .find(|n| n.has_tag_name("DeckLocation"))
+            .find(|n| n.has_tag_name("HeadPosInstr"))
             .unwrap();
-        let position = Self::build_instruction_value(&pos_node, VariableType::String);
-        let z_off_node = pos_node
-            .next_siblings()
-            .find(|n| n.has_tag_name("ZPosOffset"))
+        let position_head = Self::build_position_head(&pos_node);
+        Command::Pick { position_head }
+    }
+
+    fn build_instruction_place(node: &Node) -> Command {
+        let pos_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("HeadPosInstr"))
             .unwrap();
-        let z_offset = Self::build_instruction_value(&z_off_node, VariableType::Float);
-        Command::Pick { position, z_offset }
+        let position_head = Self::build_position_head(&pos_node);
+        Command::Place { position_head }
     }
 
     fn build_instruction_run_method(node: &Node) -> Command {
@@ -504,11 +621,17 @@ impl<'a> Loader<'a> {
     }
 
     fn build_instruction_run_shaker_for_time(node: &Node) -> Command {
-        let speed_node = node.descendants().find(|n| n.has_tag_name("Speed")).unwrap();
+        let speed_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("Speed"))
+            .unwrap();
         let speed = Self::build_instruction_value(&speed_node, VariableType::Float);
-        let timeout_node = speed_node.next_siblings().find(|n| n.has_tag_name("TimeoutDuration")).unwrap();
+        let timeout_node = speed_node
+            .next_siblings()
+            .find(|n| n.has_tag_name("TimeoutDuration"))
+            .unwrap();
         let timeout = Self::build_instruction_value(&timeout_node, VariableType::Seconds);
-        Command::RunShakerForTime{speed, timeout}
+        Command::RunShakerForTime { speed, timeout }
     }
 
     fn build_instruction_rem(node: &Node) -> Command {
@@ -554,7 +677,28 @@ impl<'a> Loader<'a> {
             .find(|n| n.has_tag_name("TurnOn"))
             .unwrap();
         let on_off = Self::build_instruction_value(&on_off_node, VariableType::Bool);
-        Command::ShakerOnOff{device, on_off}
+        Command::ShakerOnOff { device, on_off }
+    }
+
+    fn build_instruction_while_loop(node: &Node) -> Command {
+        let if_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("ControlInstr_WhileLoop"))
+            .unwrap();
+        let fields = text_only_children(&if_node);
+        let comparator = Self::build_comparator(fields.get(INSTR_COMPARATOR).unwrap());
+        let var_type = Self::build_test_variable_type(fields.get("ComparisonType").unwrap());
+        let mut instr_val = Vec::new();
+        for c in if_node.children().filter(|n| n.is_element()).skip(2) {
+            instr_val.push(Self::build_instruction_value(&c, var_type));
+        }
+        let rhs = instr_val.pop().unwrap();
+        let lhs = instr_val.pop().unwrap();
+        Command::IfThen {
+            comparator,
+            lhs,
+            rhs,
+        }
     }
 
     fn build_show_dialog(node: &Node) -> Command {
@@ -606,7 +750,7 @@ impl<'a> Loader<'a> {
         };
         let value = match value_type {
             VariableType::Bool => {
-                let b = if *value_str == "0" { false } else { true };
+                let b = Self::build_bool(&value_str);
                 VariableValue::Bool(b)
             }
             VariableType::Float => VariableValue::Float(value_str.parse().unwrap()),
@@ -772,7 +916,7 @@ enum Command {
     AbsoluteMove,
     ApplicationExit,
     Aspirate {
-        position: Uuid,
+        position_head: PositionHead,
         volume: InstructionValue,
     },
     BeginLoop {
@@ -783,11 +927,16 @@ enum Command {
     },
     CloseWorkbook,
     Dispense {
-        position: Uuid,
-        volume: Option<f64>,
+        position_head: PositionHead,
+        volume: InstructionValue,
+        dispense_all: bool,
+    },
+    DispenseMainArray {
+        volume: InstructionValue,
+        dispense_all: bool,
     },
     EjectTips {
-        position: InstructionValue,
+        load_eject_tips_head: LoadEjectTipsHead,
     },
     EndIf,
     EndLoop,
@@ -797,8 +946,7 @@ enum Command {
     },
     GetCurrentPositionRelativeToReference,
     HeadPosition {
-        constant: Option<Uuid>,
-        variable: InstructionValue,
+        position_head: PositionHead,
     },
     Home {
         x: bool,
@@ -814,7 +962,7 @@ enum Command {
     Initialize,
     InitializeSystem,
     LoadTips {
-        position: InstructionValue,
+        load_eject_tips_head: LoadEjectTipsHead,
     },
     MathOperation {
         operator: Operator,
@@ -823,22 +971,19 @@ enum Command {
         rhs_op2: InstructionValue,
     },
     Mix {
-        position: Uuid,
+        position_head: PositionHead,
     },
     MoveMaterial {
-        from_position: Uuid,
-        to_position: Uuid,
-        z_offset: f64,
+        from: PositionHead,
+        to: PositionHead,
     },
     OpenWorkbook,
     PAxisSetPosition,
     Pick {
-        position: InstructionValue,
-        z_offset: InstructionValue,
+        position_head: PositionHead,
     },
     Place {
-        position: Uuid,
-        z_offset: f64,
+        position_head: PositionHead,
     },
     REM {
         comment: String,
@@ -913,6 +1058,12 @@ struct Parameter {
 }
 
 struct PositionHead {
+    deck_parameter: Option<Uuid>,
+    deck_location: InstructionValue,
+    z_offset: InstructionValue,
+}
+
+struct LoadEjectTipsHead {
     deck_parameter: Option<Uuid>,
     deck_location: InstructionValue,
 }
@@ -1028,7 +1179,6 @@ mod tests {
         }
         v.sort();
         v.dedup();
-        println!("{:?}", v);
     }
 
     #[test]
