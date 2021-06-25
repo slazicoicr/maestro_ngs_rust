@@ -432,7 +432,10 @@ impl<'a> Loader<'a> {
     }
 
     fn build_instruction_dispense(node: &Node) -> Command {
-        let dcc_control_node = node.descendants().find(|n| n.has_tag_name("DCCControl")).unwrap();
+        let dcc_control_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("DCCControl"))
+            .unwrap();
         if dcc_control_node.text().unwrap() == "Sciclone" {
             let all_node = node
                 .descendants()
@@ -455,11 +458,20 @@ impl<'a> Loader<'a> {
                 volume,
             }
         } else {
-            let volume_node = node.descendants().find(|n| n.has_tag_name("Volume")).unwrap();
+            let volume_node = node
+                .descendants()
+                .find(|n| n.has_tag_name("Volume"))
+                .unwrap();
             let volume = Self::build_instruction_value(&volume_node, VariableType::Float);
-            let dispense_all_node = volume_node.next_siblings().find(|n| n.has_tag_name("DsAll")).unwrap();
+            let dispense_all_node = volume_node
+                .next_siblings()
+                .find(|n| n.has_tag_name("DsAll"))
+                .unwrap();
             let dispense_all = Self::build_bool(dispense_all_node.text().unwrap());
-            Command::DispenseMainArray {volume, dispense_all}
+            Command::DispenseMainArray {
+                volume,
+                dispense_all,
+            }
         }
     }
 
@@ -496,12 +508,18 @@ impl<'a> Loader<'a> {
 
     fn build_instruction_home(node: &Node) -> Command {
         let x_node = node.descendants().find(|n| n.has_tag_name("X")).unwrap();
-        let y_node = x_node.next_siblings().find(|n| n.has_tag_name("Y")).unwrap();
-        let z_node = y_node.next_siblings().find(|n| n.has_tag_name("Z")).unwrap();
+        let y_node = x_node
+            .next_siblings()
+            .find(|n| n.has_tag_name("Y"))
+            .unwrap();
+        let z_node = y_node
+            .next_siblings()
+            .find(|n| n.has_tag_name("Z"))
+            .unwrap();
         let x = Self::build_bool(x_node.text().unwrap());
         let y = Self::build_bool(y_node.text().unwrap());
         let z = Self::build_bool(z_node.text().unwrap());
-        Command::Home{x, y, z}
+        Command::Home { x, y, z }
     }
 
     fn build_instruction_if_then(node: &Node) -> Command {
@@ -565,19 +583,34 @@ impl<'a> Loader<'a> {
     }
 
     fn build_instruction_mix(node: &Node) -> Command {
-        let head_node = node.descendants().find(|n| n.has_tag_name("PositionHeadInstr")).unwrap();
+        let head_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("PositionHeadInstr"))
+            .unwrap();
         let position_head = Self::build_position_head(&head_node);
-        Command::Mix{position_head}
+        Command::Mix { position_head }
     }
 
     fn build_instruction_move_material(node: &Node) -> Command {
-        let from_node = node.descendants().find(|n| n.has_tag_name("MoveMatPickInstr")).unwrap();
-        let from_head_node = from_node.descendants().find(|n| n.has_tag_name("PositionHeadInstr")).unwrap();
+        let from_node = node
+            .descendants()
+            .find(|n| n.has_tag_name("MoveMatPickInstr"))
+            .unwrap();
+        let from_head_node = from_node
+            .descendants()
+            .find(|n| n.has_tag_name("PositionHeadInstr"))
+            .unwrap();
         let from = Self::build_position_head(&from_head_node);
-        let to_node = from_node.next_siblings().find(|n| n.has_tag_name("MoveMatPlaceInstr")).unwrap();
-        let to_head_node = to_node.descendants().find(|n| n.has_tag_name("PositionHeadInstr")).unwrap();
+        let to_node = from_node
+            .next_siblings()
+            .find(|n| n.has_tag_name("MoveMatPlaceInstr"))
+            .unwrap();
+        let to_head_node = to_node
+            .descendants()
+            .find(|n| n.has_tag_name("PositionHeadInstr"))
+            .unwrap();
         let to = Self::build_position_head(&to_head_node);
-        Command::MoveMaterial{from, to}
+        Command::MoveMaterial { from, to }
     }
 
     fn build_instruction_pick(node: &Node) -> Command {
@@ -799,6 +832,16 @@ impl SavedApplication {
         self.methods.insert(method.id, method);
     }
 
+    /// Does method exist
+    pub fn has_method(&self, method_id: Uuid) -> bool {
+        self.methods.contains_key(&method_id)
+    }
+
+    /// The layout ids of the application
+    pub fn ids_global_var(&self) -> Vec<&Uuid> {
+        self.global_variables.keys().collect()
+    }
+
     /// The layout ids of the application
     pub fn ids_layout(&self) -> Vec<&Uuid> {
         self.layouts.keys().collect()
@@ -809,12 +852,29 @@ impl SavedApplication {
         self.methods.keys().collect()
     }
 
+    /// Instruction from method
+    pub fn instruction(&self, method_id: Uuid, line: usize) -> Option<&Instruction> {
+        self.methods.get(&method_id).and_then(|m| m.instructions.get(line))
+    }
+
+    /// How many instructions in the method
+    pub fn instruction_count(&self, method_id: Uuid) -> Option<usize> {
+        self.methods.get(&method_id).and_then(|m| Some(m.instructions.len()))
+    }
+
     /// The layout associated with the specified method
     pub fn layout_of_method(&self, method_id: Uuid) -> Option<Uuid> {
         match self.methods.get(&method_id) {
             Some(method) => Some(method.layout_id),
             None => None,
         }
+    }
+
+    /// Local variables of a method
+    pub fn local_variables_of_method(&self, method_id: Uuid) -> Option<&HashMap<Uuid, Variable>> {
+        self.methods
+            .get(&method_id)
+            .and_then(|m| Some(&m.local_variables_pool.variables))
     }
 
     /// The name of the global variable
@@ -839,6 +899,13 @@ impl SavedApplication {
             Some(method) => Some(&method.designation),
             None => None,
         }
+    }
+
+    /// Parameters of a method
+    pub fn parameters_of_method(&self, method_id: Uuid) -> Option<&HashMap<Uuid, Variable>> {
+        self.methods
+            .get(&method_id)
+            .and_then(|m| Some(&m.parameters.variables))
     }
 
     /// The method that called at the start of the application
@@ -878,7 +945,7 @@ struct VariablesPool {
     id: Uuid,
     variables: HashMap<Uuid, Variable>,
 }
-struct Variable {
+pub struct Variable {
     designation: String,
     id: Uuid,
     value: VariableValue,
@@ -907,12 +974,13 @@ struct Method {
     instructions: Vec<Instruction>,
 }
 
-struct Instruction {
-    is_comment: bool,
-    command: Command,
+pub struct Instruction {
+    pub is_comment: bool,
+    pub command: Command,
 }
 
-enum Command {
+#[derive(Debug)]
+pub enum Command {
     AbsoluteMove,
     ApplicationExit,
     Aspirate {
@@ -1033,13 +1101,15 @@ enum Command {
     },
 }
 
-enum Operator {
+#[derive(Debug)]
+pub enum Operator {
     Assign,
     Minus,
     Plus,
 }
 
-enum Comparator {
+#[derive(Debug)]
+pub enum Comparator {
     Equals,
     GreaterThan,
     GreaterThanOrEqual,
@@ -1047,23 +1117,27 @@ enum Comparator {
     LessThanOrEqual,
 }
 
-struct InstructionValue {
+#[derive(Debug)]
+pub struct InstructionValue {
     direct: VariableValue,
     variable: Option<Uuid>,
 }
 
-struct Parameter {
+#[derive(Debug)]
+pub struct Parameter {
     id: Uuid,
     value: InstructionValue,
 }
 
-struct PositionHead {
+#[derive(Debug)]
+pub struct PositionHead {
     deck_parameter: Option<Uuid>,
     deck_location: InstructionValue,
     z_offset: InstructionValue,
 }
 
-struct LoadEjectTipsHead {
+#[derive(Debug)]
+pub struct LoadEjectTipsHead {
     deck_parameter: Option<Uuid>,
     deck_location: InstructionValue,
 }
