@@ -1,5 +1,5 @@
 use roxmltree::{Document, Node};
-use std::collections::HashMap;
+use std::{collections::HashMap, hash::Hash};
 use uuid::Uuid;
 
 const APP: &str = "Application";
@@ -832,6 +832,11 @@ impl SavedApplication {
         self.methods.insert(method.id, method);
     }
 
+    /// Global variables of saved application
+    pub fn global_variables(&self) -> &HashMap<Uuid, Variable> {
+        &self.global_variables
+    }
+
     /// Does method exist
     pub fn has_method(&self, method_id: Uuid) -> bool {
         self.methods.contains_key(&method_id)
@@ -912,17 +917,9 @@ impl SavedApplication {
     pub fn start_method(&self) -> Uuid {
         self.start_method
     }
-
-    /// The value of a global variable
-    pub fn value_global_var(&self, var_id: Uuid) -> Option<&VariableValue> {
-        match self.global_variables.get(&var_id) {
-            Some(var) => Some(&var.value),
-            None => None,
-        }
-    }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum VariableValue {
     Bool(bool),
     Float(f64),
@@ -945,6 +942,7 @@ struct VariablesPool {
     id: Uuid,
     variables: HashMap<Uuid, Variable>,
 }
+#[derive(Debug, Clone)]
 pub struct Variable {
     designation: String,
     id: Uuid,

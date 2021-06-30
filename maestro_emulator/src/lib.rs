@@ -1,25 +1,29 @@
 use maestro_application::{Command, SavedApplication, Variable};
-use std::collections::HashMap;
+use std::{collections::HashMap, hash::Hash};
 use uuid::Uuid;
 
 type Result<T> = std::result::Result<T, EmulatorError>;
 
 pub struct Emulator<'a> {
     saved_app: &'a SavedApplication,
+    global_variables: HashMap<Uuid, Variable>,
     method_stack: Vec<Uuid>,
     action_executed: Vec<Action<'a>>,
     instruction_stack: Vec<usize>,
-    saved_param_stack: Vec<&'a HashMap<Uuid, Variable>>,
+    param_stack: Vec<HashMap<Uuid, Variable>>,
+    local_variables: HashMap<Uuid, HashMap<Uuid, Variable>>
 }
 
 impl<'a> Emulator<'a> {
     pub fn new(saved_app: &'a SavedApplication) -> Result<Self> {
         let mut emu = Emulator {
             saved_app,
+            global_variables: saved_app.global_variables().clone(),
             method_stack: Vec::new(),
             action_executed: Vec::new(),
             instruction_stack: Vec::new(),
-            saved_param_stack: Vec::new(),
+            param_stack: Vec::new(),
+            local_variables: HashMap::new(),
         };
 
         let uuid = saved_app.start_method();
@@ -27,8 +31,14 @@ impl<'a> Emulator<'a> {
 
         let saved_param = saved_app
             .parameters_of_method(uuid)
+            .cloned()
             .ok_or(EmulatorError::UnknownMethod(uuid))?;
-        emu.saved_param_stack.push(saved_param);
+        emu.param_stack.push(saved_param);
+
+        for &uuid in saved_app.ids_methods() {
+            let local = saved_app.local_variables_of_method(uuid).ok_or(EmulatorError::UnknownMethod(uuid))?;
+            emu.local_variables.insert(uuid, local.clone());
+        }
 
         emu.instruction_stack.push(0);
         Ok(emu)
@@ -39,6 +49,7 @@ impl<'a> Emulator<'a> {
     }
 
     pub fn next(&mut self) -> Result<Option<&Action>> {
+        // Multiple methods may be finished. If a method A is last instruction of method B.
         while self.try_finish_method()? {
             continue;
         }
@@ -49,11 +60,11 @@ impl<'a> Emulator<'a> {
 
         let action = self.build_action()?;
         self.execute_action(&action)?;
-        self.action_executed.push(action);
         let line = self
             .instruction_stack
             .last_mut()
             .ok_or(EmulatorError::EmptyInstructionStack)?;
+        self.action_executed.push(action);
         *line += 1;
         Ok(Some(self.action_executed.last().unwrap()))
     }
@@ -73,7 +84,7 @@ impl<'a> Emulator<'a> {
         Ok(Action {
             method: method_id,
             line: current_line,
-            executable: !instr.is_comment,
+            skip: !instr.is_comment,
             execute: exe,
         })
     }
@@ -86,11 +97,16 @@ impl<'a> Emulator<'a> {
     }
 
     fn execute_action(&mut self, action: &Action) -> Result<()> {
-        if action.executable {
-            Ok(())
-        } else {
-            Ok(())
+        if action.skip {
+            return Ok(())
         }
+
+        match action.execute {
+            Execute::REM{comment: _} => {},
+        }
+
+        Ok(())
+        
     }
 
     fn get_current_instruction(&self) -> Result<usize> {
@@ -132,7 +148,7 @@ impl<'a> Emulator<'a> {
         self.instruction_stack
             .pop()
             .ok_or(EmulatorError::EmptyInstructionStack)?;
-        self.saved_param_stack
+        self.param_stack
             .pop()
             .ok_or(EmulatorError::EmptyParameterStack)?;
         Ok(())
@@ -142,7 +158,7 @@ impl<'a> Emulator<'a> {
 pub struct Action<'a> {
     pub method: Uuid,
     pub line: usize,
-    pub executable: bool,
+    pub skip: bool,
     pub execute: Execute<'a>,
 }
 
@@ -178,3 +194,41 @@ impl std::fmt::Display for EmulatorError {
 }
 
 impl std::error::Error for EmulatorError {}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use maestro_application::Loader; 
+
+    fn load_empty_app() -> String {
+        let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        d.push("resources/test/Application_Empty.eap");
+
+        std::fs::read_to_string(d).unwrap()
+    }
+
+    fn load_complex_app() -> String {
+        let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
+        d.push("resources/test/Application_Complex.eap");
+
+        std::fs::read_to_string(d).unwrap()
+    }
+
+    #[test]
+    fn emulate_empty_app(){
+        let app = Loader::new(&load_empty_app()).build_application();
+        let mut emu = Emulator::new(&app).unwrap();
+        let uuid = "3AC47C04-DCCE-4036-8F9F-6AD7D530E220".parse().unwrap();
+        assert_eq!(emu.method_stack.len(), 1);
+        assert_eq!(emu.method_stack[0], uuid);
+        assert_eq!(emu.global_variables.len(), 0);
+        assert_eq!(emu.param_stack.len(), 1);
+        assert_eq!(emu.param_stack[0].len(), 0);
+        assert_eq!(emu.local_variables.len(), 1);
+        assert_eq!(emu.local_variables.get(&uuid).unwrap().len(), 0);
+
+        let step = emu.next().unwrap();
+        assert!(step.is_none());
+        assert!(emu.done());
+    }
+}
