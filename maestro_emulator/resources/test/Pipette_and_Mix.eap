@@ -1,0 +1,2307 @@
+<ExportedApplication>
+
+  <ExportedApplicationVersion>6.8</ExportedApplicationVersion>
+
+  <ExportedApplicationBuild>6</ExportedApplicationBuild>
+
+  <Consumables>
+
+    <ConsumablesCount>2</ConsumablesCount>
+
+    <Consumable1>
+
+      <Consumable>
+
+        <ConsumableID>5917e9be-ef73-403a-baeb-ff779944598e</ConsumableID>
+
+        <ConsumableName>100ul &amp; 200ul SBS Footprint</ConsumableName>
+
+        <Description>100ul &amp; 200ul SBS Footprint</Description>
+
+        <Manufacturer>Caliper Life Sciences</Manufacturer>
+
+        <PartNumber></PartNumber>
+
+        <Category>Tip Box</Category>
+
+        <Density>96</Density>
+
+        <Columns>12</Columns>
+
+        <Rows>8</Rows>
+
+        <RowPitch>9</RowPitch>
+
+        <ColumnPitch>9</ColumnPitch>
+
+        <WellsShape>Circle</WellsShape>
+
+        <WellsBottomShape>Flat</WellsBottomShape>
+
+        <RowOffset>11.24</RowOffset>
+
+        <ColumnOffset>14.38</ColumnOffset>
+
+        <Width>85.48</Width>
+
+        <Length>127.8</Length>
+
+        <Height>56</Height>
+
+        <WellsDiameter>7</WellsDiameter>
+
+        <WellsDepth>52.2</WellsDepth>
+
+        <InsideLength>7</InsideLength>
+
+        <InsideWidth>7</InsideWidth>
+
+        <T2StackingHeight>0</T2StackingHeight>
+
+        <T2StackingOffset>0</T2StackingOffset>
+
+        <ReadOnly>True</ReadOnly>
+
+        <ConsumableUserName>caliperls</ConsumableUserName>
+
+        <ChangeComment></ChangeComment>
+
+        <ValidPipettingSource>True</ValidPipettingSource>
+
+        <ValidPipettingDestination>True</ValidPipettingDestination>
+
+        <WidthAtTop>82</WidthAtTop>
+
+        <LengthAtTop>124</LengthAtTop>
+
+        <HeightOfTopDimensions>12</HeightOfTopDimensions>
+
+        <NotchUL>False</NotchUL>
+
+        <NotchUR>False</NotchUR>
+
+        <NotchLL>False</NotchLL>
+
+        <NotchLR>False</NotchLR>
+
+        <Color>Not Specified</Color>
+
+        <SkirtType>Full Skirt</SkirtType>
+
+      </Consumable>
+
+    </Consumable1>
+
+    <Consumable2>
+
+      <Consumable>
+
+        <ConsumableID>0a49dfe7-8242-4858-892c-c11fdba37677</ConsumableID>
+
+        <ConsumableName>Generic SBS Plate 96</ConsumableName>
+
+        <Description></Description>
+
+        <Manufacturer>&lt; Generic &gt;</Manufacturer>
+
+        <PartNumber></PartNumber>
+
+        <Category>SBS Plate</Category>
+
+        <Density>96</Density>
+
+        <Columns>12</Columns>
+
+        <Rows>8</Rows>
+
+        <RowPitch>9</RowPitch>
+
+        <ColumnPitch>9</ColumnPitch>
+
+        <WellsShape>Circle</WellsShape>
+
+        <WellsBottomShape>Angled</WellsBottomShape>
+
+        <RowOffset>11.24</RowOffset>
+
+        <ColumnOffset>14.38</ColumnOffset>
+
+        <Width>85.48</Width>
+
+        <Length>127.76</Length>
+
+        <Height>14.35</Height>
+
+        <WellsDiameter>6.85</WellsDiameter>
+
+        <WellsDepth>11.12</WellsDepth>
+
+        <InsideLength>6.85</InsideLength>
+
+        <InsideWidth>6.85</InsideWidth>
+
+        <T2StackingHeight>0</T2StackingHeight>
+
+        <T2StackingOffset>0</T2StackingOffset>
+
+        <ReadOnly>True</ReadOnly>
+
+        <ConsumableUserName>caliperls</ConsumableUserName>
+
+        <ChangeComment></ChangeComment>
+
+        <ValidPipettingSource>True</ValidPipettingSource>
+
+        <ValidPipettingDestination>True</ValidPipettingDestination>
+
+        <WidthAtTop>0</WidthAtTop>
+
+        <LengthAtTop>0</LengthAtTop>
+
+        <HeightOfTopDimensions>0</HeightOfTopDimensions>
+
+        <NotchUL>False</NotchUL>
+
+        <NotchUR>False</NotchUR>
+
+        <NotchLL>False</NotchLL>
+
+        <NotchLR>False</NotchLR>
+
+        <Color>Not Specified</Color>
+
+        <SkirtType>Full Skirt</SkirtType>
+
+      </Consumable>
+
+    </Consumable2>
+
+  </Consumables>
+
+  <LPool>
+
+    <LCnt>1</LCnt>
+
+    <Liq_1>
+
+      <Dscrp>Caliper Default High-Volume Head Liquid Class</Dscrp>
+
+      <Desgn>Default</Desgn>
+
+      <Dev>4</Dev>
+
+      <Id>807059F7-749B-4712-BA47-2153C562F903</Id>
+
+      <Lcked>0</Lcked>
+
+      <ParId></ParId>
+
+      <RO>-1</RO>
+
+      <AspSp>40.5</AspSp>
+
+      <DspSp>85.5</DspSp>
+
+      <LdAgp>0</LdAgp>
+
+      <TrAgp>0</TrAgp>
+
+      <ClPtsC>6</ClPtsC>
+
+      <ClPtX1>0</ClPtX1>
+
+      <ClPtY1>0</ClPtY1>
+
+      <CofA1>0</CofA1>
+
+      <CofB1>1</CofB1>
+
+      <CofC1>0</CofC1>
+
+      <CofD1>0</CofD1>
+
+      <ClPtX2>1</ClPtX2>
+
+      <ClPtY2>1</ClPtY2>
+
+      <CofA2>1</CofA2>
+
+      <CofB2>1</CofB2>
+
+      <CofC2>0</CofC2>
+
+      <CofD2>0</CofD2>
+
+      <ClPtX3>50</ClPtX3>
+
+      <ClPtY3>50</ClPtY3>
+
+      <CofA3>50</CofA3>
+
+      <CofB3>1</CofB3>
+
+      <CofC3>0</CofC3>
+
+      <CofD3>0</CofD3>
+
+      <ClPtX4>100</ClPtX4>
+
+      <ClPtY4>100</ClPtY4>
+
+      <CofA4>100</CofA4>
+
+      <CofB4>1</CofB4>
+
+      <CofC4>0</CofC4>
+
+      <CofD4>0</CofD4>
+
+      <ClPtX5>150</ClPtX5>
+
+      <ClPtY5>150</ClPtY5>
+
+      <CofA5>150</CofA5>
+
+      <CofB5>1</CofB5>
+
+      <CofC5>0</CofC5>
+
+      <CofD5>0</CofD5>
+
+      <ClPtX6>205</ClPtX6>
+
+      <ClPtY6>205</ClPtY6>
+
+      <CofA6>0</CofA6>
+
+      <CofB6>0</CofB6>
+
+      <CofC6>0</CofC6>
+
+      <CofD6>0</CofD6>
+
+    </Liq_1>
+
+  </LPool>
+
+  <Application>
+
+    <ApplicationDesignation>Applications\Development\Savo_emulation\0_pipette_and_mix</ApplicationDesignation>
+
+    <Version>6.8</Version>
+
+    <IsReadOnly>0</IsReadOnly>
+
+    <ConnectionTypeRequired>0</ConnectionTypeRequired>
+
+    <StartupMethod>93E18380-D543-4FDD-8484-DDD7A0C6DE4C</StartupMethod>
+
+    <ConfigurationSettings>
+
+      <DeviceControlsCount>2</DeviceControlsCount>
+
+      <DeviceControls1>Sciclone</DeviceControls1>
+
+      <DeviceControls2>MainArray</DeviceControls2>
+
+    </ConfigurationSettings>
+
+    <GlobalVariablesPool>
+
+      <VariablesPool>
+
+        <VariablesPoolDesignation>GLOBAL Variables</VariablesPoolDesignation>
+
+        <VariablesPoolID>F19E3A18-8D78-4F2B-B27B-AE12D2D0DA13</VariablesPoolID>
+
+        <VariablesCount>1</VariablesCount>
+
+        <Variable1>
+
+          <VariableType>2</VariableType>
+
+          <VariableID>85393D18-23ED-4DEB-A02D-A38067D93D22</VariableID>
+
+          <VariableDesignation>g_mix_volume</VariableDesignation>
+
+          <Value>80</Value>
+
+          <VariableDescription></VariableDescription>
+
+          <PermissibleValues>-9999999-9999999</PermissibleValues>
+
+          <VariablePoolID>F19E3A18-8D78-4F2B-B27B-AE12D2D0DA13</VariablePoolID>
+
+          <VariablePoolDesignation>GLOBAL Variables</VariablePoolDesignation>
+
+        </Variable1>
+
+      </VariablesPool>
+
+    </GlobalVariablesPool>
+
+    <Layouts>
+
+      <LayoutsCount>1</LayoutsCount>
+
+      <Layout1>
+
+        <VariablesPool>
+
+          <VariablesPoolDesignation>MainLayout</VariablesPoolDesignation>
+
+          <VariablesPoolID>8A644556-8BC2-4C27-87AF-6D4BE4ED693B</VariablesPoolID>
+
+          <VariablesCount>4</VariablesCount>
+
+          <Variable1>
+
+            <VariableType>5</VariableType>
+
+            <VarVersion>Sciclone_4</VarVersion>
+
+            <VariableID>68088C2B-C21D-4C8E-AC1F-8FC6D21A63D2</VariableID>
+
+            <VariableDesignation>C3</VariableDesignation>
+
+            <VariableDescription></VariableDescription>
+
+            <NumberOfStackedConsumables>1</NumberOfStackedConsumables>
+
+            <LocDesignation>C3</LocDesignation>
+
+            <LocInstrument></LocInstrument>
+
+            <MatVersion>Sciclone_4</MatVersion>
+
+            <ThisDesignation>Consumable</ThisDesignation>
+
+            <ThisIDLocMaterial>0D8AEE7F-61E0-4CBD-8CC8-F51D383188D4</ThisIDLocMaterial>
+
+            <IDAccOrCon>5917e9be-ef73-403a-baeb-ff779944598e</IDAccOrCon>
+
+            <AccOrConType>0</AccOrConType>
+
+            <InitialVolume>1</InitialVolume>
+
+            <UseLLT>False</UseLLT>
+
+          </Variable1>
+
+          <Variable2>
+
+            <VariableType>5</VariableType>
+
+            <VarVersion>Sciclone_4</VarVersion>
+
+            <VariableID>7ADF3715-7608-4AF6-B32D-F3F7A9BD2F47</VariableID>
+
+            <VariableDesignation>B4</VariableDesignation>
+
+            <VariableDescription></VariableDescription>
+
+            <NumberOfStackedConsumables>1</NumberOfStackedConsumables>
+
+            <LocDesignation>B4</LocDesignation>
+
+            <LocInstrument></LocInstrument>
+
+            <MatVersion>Sciclone_4</MatVersion>
+
+            <ThisDesignation>Consumable(1)</ThisDesignation>
+
+            <ThisIDLocMaterial>081D9870-C472-4D5D-857A-C9DFA2FB6CBC</ThisIDLocMaterial>
+
+            <IDAccOrCon>0a49dfe7-8242-4858-892c-c11fdba37677</IDAccOrCon>
+
+            <AccOrConType>0</AccOrConType>
+
+            <InitialVolume>0</InitialVolume>
+
+            <UseLLT>False</UseLLT>
+
+          </Variable2>
+
+          <Variable3>
+
+            <VariableType>5</VariableType>
+
+            <VarVersion>Sciclone_4</VarVersion>
+
+            <VariableID>15386485-B02E-4E9E-8249-B342CCB5E70A</VariableID>
+
+            <VariableDesignation>C4</VariableDesignation>
+
+            <VariableDescription></VariableDescription>
+
+            <NumberOfStackedConsumables>1</NumberOfStackedConsumables>
+
+            <LocDesignation>C4</LocDesignation>
+
+            <LocInstrument></LocInstrument>
+
+            <MatVersion>Sciclone_4</MatVersion>
+
+            <ThisDesignation>Consumable(2)</ThisDesignation>
+
+            <ThisIDLocMaterial>8BD9AA5A-31EA-4496-8D46-48D8F1D71D4E</ThisIDLocMaterial>
+
+            <IDAccOrCon>0a49dfe7-8242-4858-892c-c11fdba37677</IDAccOrCon>
+
+            <AccOrConType>0</AccOrConType>
+
+            <InitialVolume>0</InitialVolume>
+
+            <UseLLT>False</UseLLT>
+
+          </Variable3>
+
+          <Variable4>
+
+            <VariableType>5</VariableType>
+
+            <VarVersion>Sciclone_4</VarVersion>
+
+            <VariableID>7EDD3B42-B7F8-4E8A-82FD-A1FD43EF5561</VariableID>
+
+            <VariableDesignation>D5</VariableDesignation>
+
+            <VariableDescription></VariableDescription>
+
+            <NumberOfStackedConsumables>1</NumberOfStackedConsumables>
+
+            <LocDesignation>D5</LocDesignation>
+
+            <LocInstrument></LocInstrument>
+
+            <MatVersion>Sciclone_4</MatVersion>
+
+            <ThisDesignation>Accessory</ThisDesignation>
+
+            <ThisIDLocMaterial>B8DD467F-D27F-4FD5-B8A5-85A9B7693961</ThisIDLocMaterial>
+
+            <IDAccOrCon>7f4917a1-777c-457b-8b53-920d67d48fd2</IDAccOrCon>
+
+            <AccOrConType>1</AccOrConType>
+
+            <InitialVolume>0</InitialVolume>
+
+            <UseLLT>False</UseLLT>
+
+          </Variable4>
+
+        </VariablesPool>
+
+      </Layout1>
+
+    </Layouts>
+
+    <LayoutDetails>
+
+      <LayoutDetailsCount>1</LayoutDetailsCount>
+
+      <LayoutDetail1>
+
+        <LayoutDetailDesignation>MainLayout</LayoutDetailDesignation>
+
+        <LayoutDetailID>8A644556-8BC2-4C27-87AF-6D4BE4ED693B</LayoutDetailID>
+
+        <LayoutDetailOvrZTravelClearance>0</LayoutDetailOvrZTravelClearance>
+
+        <LayoutDetailOvrXYTravelClearance>0</LayoutDetailOvrXYTravelClearance>
+
+        <LayoutDetailOvrZDownClearance>0</LayoutDetailOvrZDownClearance>
+
+        <LayoutDetailOvrXYDownClearance>0</LayoutDetailOvrXYDownClearance>
+
+        <LayoutDetailZTravelClearance>3</LayoutDetailZTravelClearance>
+
+        <LayoutDetailXYTravelClearance>3</LayoutDetailXYTravelClearance>
+
+        <LayoutDetailZDownClearance>3</LayoutDetailZDownClearance>
+
+        <LayoutDetailXYDownClearance>3</LayoutDetailXYDownClearance>
+
+      </LayoutDetail1>
+
+    </LayoutDetails>
+
+    <Methods>
+
+      <MethodsCount>1</MethodsCount>
+
+      <Method1>
+
+        <MethodDesignation>Main</MethodDesignation>
+
+        <ProgramID>93E18380-D543-4FDD-8484-DDD7A0C6DE4C</ProgramID>
+
+        <LayoutID>8A644556-8BC2-4C27-87AF-6D4BE4ED693B</LayoutID>
+
+        <LocalVariablesPool>
+
+          <VariablesPool>
+
+            <VariablesPoolDesignation>Main:LOCAL Variables</VariablesPoolDesignation>
+
+            <VariablesPoolID>9DCEC213-2BF5-4389-BC88-28B39DA3C44F</VariablesPoolID>
+
+            <VariablesCount>1</VariablesCount>
+
+            <Variable1>
+
+              <VariableType>2</VariableType>
+
+              <VariableID>9D3C8D85-52DB-4917-BCDC-74CEDA7564B6</VariableID>
+
+              <VariableDesignation>l_mix_times</VariableDesignation>
+
+              <Value>10</Value>
+
+              <VariableDescription></VariableDescription>
+
+              <PermissibleValues>-9999999-9999999</PermissibleValues>
+
+              <VariablePoolID>9DCEC213-2BF5-4389-BC88-28B39DA3C44F</VariablePoolID>
+
+              <VariablePoolDesignation>Main:LOCAL Variables</VariablePoolDesignation>
+
+            </Variable1>
+
+          </VariablesPool>
+
+        </LocalVariablesPool>
+
+        <Parameters>
+
+          <VariablesPool>
+
+            <VariablesPoolDesignation>Main:Parameters</VariablesPoolDesignation>
+
+            <VariablesPoolID>018F2A13-84B1-4AFB-B3B7-0DA2BAE46B5C</VariablesPoolID>
+
+            <VariablesCount>0</VariablesCount>
+
+          </VariablesPool>
+
+        </Parameters>
+
+        <Hidden>0</Hidden>
+
+        <ReadOnly>0</ReadOnly>
+
+        <MethodDescription></MethodDescription>
+
+        <MethodVisibleToClient>-1</MethodVisibleToClient>
+
+        <DefaultErrorHandler></DefaultErrorHandler>
+
+        <ProgramExecutionTime>0</ProgramExecutionTime>
+
+        <ProgramCustomProperty></ProgramCustomProperty>
+
+        <HideParametersDialog>0</HideParametersDialog>
+
+        <InstructionsCount>5</InstructionsCount>
+
+        <Instruction1>
+
+          <InstructionType>1</InstructionType>
+
+          <LineTag></LineTag>
+
+          <ErrorHandler></ErrorHandler>
+
+          <RetryCount>0</RetryCount>
+
+          <IsComment>0</IsComment>
+
+          <Breakpoint>0</Breakpoint>
+
+          <DCCControl>Sciclone</DCCControl>
+
+          <InstructionDesignation>Load Tips</InstructionDesignation>
+
+          <LoadEjectTipsInstr>
+
+            <DeckParamter>
+
+              <DeckVariableID>68088C2B-C21D-4C8E-AC1F-8FC6D21A63D2</DeckVariableID>
+
+            </DeckParamter>
+
+            <SelectedPlateCol>
+
+              <_DirectValue>1</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </SelectedPlateCol>
+
+            <SelectedPlateRow>
+
+              <_DirectValue>1</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </SelectedPlateRow>
+
+            <PlateLayout>
+
+              <SelectedPlateRow>
+
+                <_DirectValue>1</_DirectValue>
+
+                <_Variable>[[[[---NONE---]]]]</_Variable>
+
+              </SelectedPlateRow>
+
+              <SelectedPlateCol>
+
+                <_DirectValue>1</_DirectValue>
+
+                <_Variable>[[[[---NONE---]]]]</_Variable>
+
+              </SelectedPlateCol>
+
+              <HeadRefMandrel>
+
+                <_DirectValue>1</_DirectValue>
+
+                <_Variable>[[[[---NONE---]]]]</_Variable>
+
+              </HeadRefMandrel>
+
+              <HeadApproach>0</HeadApproach>
+
+              <Quadrant>0</Quadrant>
+
+            </PlateLayout>
+
+            <InstructionType>0</InstructionType>
+
+            <HeadType>14</HeadType>
+
+            <HeadApproach>0</HeadApproach>
+
+            <Z8Cannulas>
+
+              <Z8Cannula1>-1</Z8Cannula1>
+
+              <Z8Cannula2>-1</Z8Cannula2>
+
+              <Z8Cannula3>-1</Z8Cannula3>
+
+              <Z8Cannula4>-1</Z8Cannula4>
+
+              <Z8Cannula5>-1</Z8Cannula5>
+
+              <Z8Cannula6>-1</Z8Cannula6>
+
+              <Z8Cannula7>-1</Z8Cannula7>
+
+              <Z8Cannula8>-1</Z8Cannula8>
+
+            </Z8Cannulas>
+
+            <Z8SelectionType>1</Z8SelectionType>
+
+            <Z8SelectionValue>
+
+              <_DirectValue>255</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </Z8SelectionValue>
+
+            <ArrayType>0</ArrayType>
+
+            <PressStationIO>8</PressStationIO>
+
+            <PressStationApproach>-1</PressStationApproach>
+
+            <Quadrant>0</Quadrant>
+
+            <PSDelayAfterRaise>
+
+              <_DirectValue>12</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </PSDelayAfterRaise>
+
+            <PSDelayAfterLower>
+
+              <_DirectValue>4</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </PSDelayAfterLower>
+
+            <EjectTipsCycles>
+
+              <_DirectValue>2</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </EjectTipsCycles>
+
+            <NewLVHTipsLoadOffset>
+
+              <_DirectValue>2</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </NewLVHTipsLoadOffset>
+
+            <NewLVHTipsLoadDelay>
+
+              <_DirectValue>0.5</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </NewLVHTipsLoadDelay>
+
+            <NewLVHTipsLoadCycles>
+
+              <_DirectValue>2</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </NewLVHTipsLoadCycles>
+
+            <NewLVHTipsLoadDwell>
+
+              <_DirectValue>5</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </NewLVHTipsLoadDwell>
+
+            <DeckLocation>
+
+              <_DirectValue></_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </DeckLocation>
+
+          </LoadEjectTipsInstr>
+
+        </Instruction1>
+
+        <Instruction2>
+
+          <InstructionType>1</InstructionType>
+
+          <LineTag></LineTag>
+
+          <ErrorHandler></ErrorHandler>
+
+          <RetryCount>0</RetryCount>
+
+          <IsComment>0</IsComment>
+
+          <Breakpoint>0</Breakpoint>
+
+          <DCCControl>Sciclone</DCCControl>
+
+          <InstructionDesignation>Aspirate</InstructionDesignation>
+
+          <AspirateDispenseInstr>
+
+            <InstructionType>0</InstructionType>
+
+            <TravelWellDepth>0</TravelWellDepth>
+
+            <TravelWellDepth2>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </TravelWellDepth2>
+
+            <TipTouchEnumeration>0</TipTouchEnumeration>
+
+            <TipTouchDelay>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </TipTouchDelay>
+
+            <TipTouchLoc>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </TipTouchLoc>
+
+            <RaiseAfterOp>0</RaiseAfterOp>
+
+            <DispenseAll>0</DispenseAll>
+
+            <IgnoreAirGap>0</IgnoreAirGap>
+
+            <HeadPosInstr>
+
+              <PositionHeadInstr>
+
+                <HeadType>14</HeadType>
+
+                <DeckParameter>
+
+                  <DeckVariableID>15386485-B02E-4E9E-8249-B342CCB5E70A</DeckVariableID>
+
+                </DeckParameter>
+
+                <PlateLayout>
+
+                  <SelectedPlateRow>
+
+                    <_DirectValue>1</_DirectValue>
+
+                    <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                  </SelectedPlateRow>
+
+                  <SelectedPlateCol>
+
+                    <_DirectValue>1</_DirectValue>
+
+                    <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                  </SelectedPlateCol>
+
+                  <HeadRefMandrel>
+
+                    <_DirectValue>1</_DirectValue>
+
+                    <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                  </HeadRefMandrel>
+
+                  <HeadApproach>0</HeadApproach>
+
+                  <Quadrant>0</Quadrant>
+
+                </PlateLayout>
+
+                <SelectedPlateRow>
+
+                  <_DirectValue>1</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </SelectedPlateRow>
+
+                <SelectedPlateCol>
+
+                  <_DirectValue>1</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </SelectedPlateCol>
+
+                <Quadrant>0</Quadrant>
+
+                <ArrayType>0</ArrayType>
+
+                <GripperVerticalPosition>0</GripperVerticalPosition>
+
+                <HeadApproach>1</HeadApproach>
+
+                <Z8Cannulas>
+
+                  <Z8Cannula1>-1</Z8Cannula1>
+
+                  <Z8Cannula2>-1</Z8Cannula2>
+
+                  <Z8Cannula3>-1</Z8Cannula3>
+
+                  <Z8Cannula4>-1</Z8Cannula4>
+
+                  <Z8Cannula5>-1</Z8Cannula5>
+
+                  <Z8Cannula6>-1</Z8Cannula6>
+
+                  <Z8Cannula7>-1</Z8Cannula7>
+
+                  <Z8Cannula8>-1</Z8Cannula8>
+
+                </Z8Cannulas>
+
+                <CannulaSelectionType>1</CannulaSelectionType>
+
+                <Z8CannulaVariable>
+
+                  <_DirectValue>255</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </Z8CannulaVariable>
+
+                <DeckLocation>
+
+                  <_DirectValue></_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </DeckLocation>
+
+                <RemainAtZTravelHeight>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </RemainAtZTravelHeight>
+
+                <XPosOffset>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </XPosOffset>
+
+                <YPosOffset>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </YPosOffset>
+
+                <ZPosOffset>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </ZPosOffset>
+
+              </PositionHeadInstr>
+
+            </HeadPosInstr>
+
+            <VarVolume>
+
+              <_DirectValue>100</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </VarVolume>
+
+            <VarSpeed>
+
+              <_DirectValue>40.5</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </VarSpeed>
+
+            <VarLeadingAirGap>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </VarLeadingAirGap>
+
+            <VarTrailingAirGap>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </VarTrailingAirGap>
+
+            <_IDOfAssociatedLiquidClassInPool>807059F7-749B-4712-BA47-2153C562F903</_IDOfAssociatedLiquidClassInPool>
+
+            <LastLiquidClassUsed>807059F7-749B-4712-BA47-2153C562F903</LastLiquidClassUsed>
+
+            <ZInSpeed>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </ZInSpeed>
+
+            <ZOutSpeed>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </ZOutSpeed>
+
+            <TipsPosStrategy>0</TipsPosStrategy>
+
+            <TipsPosInLL>1</TipsPosInLL>
+
+            <LLDDetectionType>0</LLDDetectionType>
+
+            <LLDErrorRecovery>0</LLDErrorRecovery>
+
+            <UserSpecifiedVol>0</UserSpecifiedVol>
+
+            <MoveRelativeToLL>0</MoveRelativeToLL>
+
+            <Z8CannulaLLD>
+
+              <Cannula1>-1</Cannula1>
+
+              <Cannula2>-1</Cannula2>
+
+              <Cannula3>-1</Cannula3>
+
+              <Cannula4>-1</Cannula4>
+
+              <Cannula5>-1</Cannula5>
+
+              <Cannula6>-1</Cannula6>
+
+              <Cannula7>-1</Cannula7>
+
+              <Cannula8>-1</Cannula8>
+
+            </Z8CannulaLLD>
+
+          </AspirateDispenseInstr>
+
+        </Instruction2>
+
+        <Instruction3>
+
+          <InstructionType>1</InstructionType>
+
+          <LineTag></LineTag>
+
+          <ErrorHandler></ErrorHandler>
+
+          <RetryCount>0</RetryCount>
+
+          <IsComment>0</IsComment>
+
+          <Breakpoint>0</Breakpoint>
+
+          <DCCControl>Sciclone</DCCControl>
+
+          <InstructionDesignation>Dispense</InstructionDesignation>
+
+          <AspirateDispenseInstr>
+
+            <InstructionType>1</InstructionType>
+
+            <TravelWellDepth>0</TravelWellDepth>
+
+            <TravelWellDepth2>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </TravelWellDepth2>
+
+            <TipTouchEnumeration>0</TipTouchEnumeration>
+
+            <TipTouchDelay>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </TipTouchDelay>
+
+            <TipTouchLoc>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </TipTouchLoc>
+
+            <RaiseAfterOp>0</RaiseAfterOp>
+
+            <DispenseAll>-1</DispenseAll>
+
+            <IgnoreAirGap>0</IgnoreAirGap>
+
+            <HeadPosInstr>
+
+              <PositionHeadInstr>
+
+                <HeadType>14</HeadType>
+
+                <DeckParameter>
+
+                  <DeckVariableID>7ADF3715-7608-4AF6-B32D-F3F7A9BD2F47</DeckVariableID>
+
+                </DeckParameter>
+
+                <PlateLayout>
+
+                  <SelectedPlateRow>
+
+                    <_DirectValue>1</_DirectValue>
+
+                    <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                  </SelectedPlateRow>
+
+                  <SelectedPlateCol>
+
+                    <_DirectValue>1</_DirectValue>
+
+                    <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                  </SelectedPlateCol>
+
+                  <HeadRefMandrel>
+
+                    <_DirectValue>1</_DirectValue>
+
+                    <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                  </HeadRefMandrel>
+
+                  <HeadApproach>0</HeadApproach>
+
+                  <Quadrant>0</Quadrant>
+
+                </PlateLayout>
+
+                <SelectedPlateRow>
+
+                  <_DirectValue>1</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </SelectedPlateRow>
+
+                <SelectedPlateCol>
+
+                  <_DirectValue>1</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </SelectedPlateCol>
+
+                <Quadrant>0</Quadrant>
+
+                <ArrayType>0</ArrayType>
+
+                <GripperVerticalPosition>0</GripperVerticalPosition>
+
+                <HeadApproach>1</HeadApproach>
+
+                <Z8Cannulas>
+
+                  <Z8Cannula1>-1</Z8Cannula1>
+
+                  <Z8Cannula2>-1</Z8Cannula2>
+
+                  <Z8Cannula3>-1</Z8Cannula3>
+
+                  <Z8Cannula4>-1</Z8Cannula4>
+
+                  <Z8Cannula5>-1</Z8Cannula5>
+
+                  <Z8Cannula6>-1</Z8Cannula6>
+
+                  <Z8Cannula7>-1</Z8Cannula7>
+
+                  <Z8Cannula8>-1</Z8Cannula8>
+
+                </Z8Cannulas>
+
+                <CannulaSelectionType>1</CannulaSelectionType>
+
+                <Z8CannulaVariable>
+
+                  <_DirectValue>255</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </Z8CannulaVariable>
+
+                <DeckLocation>
+
+                  <_DirectValue></_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </DeckLocation>
+
+                <RemainAtZTravelHeight>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </RemainAtZTravelHeight>
+
+                <XPosOffset>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </XPosOffset>
+
+                <YPosOffset>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </YPosOffset>
+
+                <ZPosOffset>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </ZPosOffset>
+
+              </PositionHeadInstr>
+
+            </HeadPosInstr>
+
+            <VarVolume>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </VarVolume>
+
+            <VarSpeed>
+
+              <_DirectValue>85.5</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </VarSpeed>
+
+            <VarLeadingAirGap>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </VarLeadingAirGap>
+
+            <VarTrailingAirGap>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </VarTrailingAirGap>
+
+            <_IDOfAssociatedLiquidClassInPool>807059F7-749B-4712-BA47-2153C562F903</_IDOfAssociatedLiquidClassInPool>
+
+            <LastLiquidClassUsed>807059F7-749B-4712-BA47-2153C562F903</LastLiquidClassUsed>
+
+            <ZInSpeed>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </ZInSpeed>
+
+            <ZOutSpeed>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </ZOutSpeed>
+
+            <TipsPosStrategy>0</TipsPosStrategy>
+
+            <TipsPosInLL>1</TipsPosInLL>
+
+            <LLDDetectionType>0</LLDDetectionType>
+
+            <LLDErrorRecovery>0</LLDErrorRecovery>
+
+            <UserSpecifiedVol>0</UserSpecifiedVol>
+
+            <MoveRelativeToLL>0</MoveRelativeToLL>
+
+            <Z8CannulaLLD>
+
+              <Cannula1>-1</Cannula1>
+
+              <Cannula2>-1</Cannula2>
+
+              <Cannula3>-1</Cannula3>
+
+              <Cannula4>-1</Cannula4>
+
+              <Cannula5>-1</Cannula5>
+
+              <Cannula6>-1</Cannula6>
+
+              <Cannula7>-1</Cannula7>
+
+              <Cannula8>-1</Cannula8>
+
+            </Z8CannulaLLD>
+
+          </AspirateDispenseInstr>
+
+        </Instruction3>
+
+        <Instruction4>
+
+          <InstructionType>1</InstructionType>
+
+          <LineTag></LineTag>
+
+          <ErrorHandler></ErrorHandler>
+
+          <RetryCount>0</RetryCount>
+
+          <IsComment>0</IsComment>
+
+          <Breakpoint>0</Breakpoint>
+
+          <DCCControl>Sciclone</DCCControl>
+
+          <InstructionDesignation>Mix</InstructionDesignation>
+
+          <MixInstr>
+
+            <MixAspirateInstr>
+
+              <AspirateDispenseInstr>
+
+                <InstructionType>0</InstructionType>
+
+                <TravelWellDepth>0</TravelWellDepth>
+
+                <TravelWellDepth2>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </TravelWellDepth2>
+
+                <TipTouchEnumeration>0</TipTouchEnumeration>
+
+                <TipTouchDelay>
+
+                  <_DirectValue>0.5</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </TipTouchDelay>
+
+                <TipTouchLoc>
+
+                  <_DirectValue>2</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </TipTouchLoc>
+
+                <RaiseAfterOp>0</RaiseAfterOp>
+
+                <DispenseAll>0</DispenseAll>
+
+                <IgnoreAirGap>-1</IgnoreAirGap>
+
+                <HeadPosInstr>
+
+                  <PositionHeadInstr>
+
+                    <HeadType>14</HeadType>
+
+                    <DeckParameter>
+
+                      <DeckVariableID>7ADF3715-7608-4AF6-B32D-F3F7A9BD2F47</DeckVariableID>
+
+                    </DeckParameter>
+
+                    <PlateLayout>
+
+                      <SelectedPlateRow>
+
+                        <_DirectValue>1</_DirectValue>
+
+                        <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                      </SelectedPlateRow>
+
+                      <SelectedPlateCol>
+
+                        <_DirectValue>1</_DirectValue>
+
+                        <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                      </SelectedPlateCol>
+
+                      <HeadRefMandrel>
+
+                        <_DirectValue>1</_DirectValue>
+
+                        <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                      </HeadRefMandrel>
+
+                      <HeadApproach>0</HeadApproach>
+
+                      <Quadrant>0</Quadrant>
+
+                    </PlateLayout>
+
+                    <SelectedPlateRow>
+
+                      <_DirectValue>1</_DirectValue>
+
+                      <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                    </SelectedPlateRow>
+
+                    <SelectedPlateCol>
+
+                      <_DirectValue>1</_DirectValue>
+
+                      <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                    </SelectedPlateCol>
+
+                    <Quadrant>0</Quadrant>
+
+                    <ArrayType>0</ArrayType>
+
+                    <GripperVerticalPosition>0</GripperVerticalPosition>
+
+                    <HeadApproach>1</HeadApproach>
+
+                    <Z8Cannulas>
+
+                      <Z8Cannula1>-1</Z8Cannula1>
+
+                      <Z8Cannula2>-1</Z8Cannula2>
+
+                      <Z8Cannula3>-1</Z8Cannula3>
+
+                      <Z8Cannula4>-1</Z8Cannula4>
+
+                      <Z8Cannula5>-1</Z8Cannula5>
+
+                      <Z8Cannula6>-1</Z8Cannula6>
+
+                      <Z8Cannula7>-1</Z8Cannula7>
+
+                      <Z8Cannula8>-1</Z8Cannula8>
+
+                    </Z8Cannulas>
+
+                    <CannulaSelectionType>1</CannulaSelectionType>
+
+                    <Z8CannulaVariable>
+
+                      <_DirectValue>255</_DirectValue>
+
+                      <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                    </Z8CannulaVariable>
+
+                    <DeckLocation>
+
+                      <_DirectValue></_DirectValue>
+
+                      <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                    </DeckLocation>
+
+                    <RemainAtZTravelHeight>
+
+                      <_DirectValue>0</_DirectValue>
+
+                      <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                    </RemainAtZTravelHeight>
+
+                    <XPosOffset>
+
+                      <_DirectValue>0</_DirectValue>
+
+                      <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                    </XPosOffset>
+
+                    <YPosOffset>
+
+                      <_DirectValue>0</_DirectValue>
+
+                      <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                    </YPosOffset>
+
+                    <ZPosOffset>
+
+                      <_DirectValue>0</_DirectValue>
+
+                      <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                    </ZPosOffset>
+
+                  </PositionHeadInstr>
+
+                </HeadPosInstr>
+
+                <VarVolume>
+
+                  <_DirectValue>80</_DirectValue>
+
+                  <_Variable>85393D18-23ED-4DEB-A02D-A38067D93D22</_Variable>
+
+                </VarVolume>
+
+                <VarSpeed>
+
+                  <_DirectValue>40.5</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </VarSpeed>
+
+                <VarLeadingAirGap>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </VarLeadingAirGap>
+
+                <VarTrailingAirGap>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </VarTrailingAirGap>
+
+                <_IDOfAssociatedLiquidClassInPool>807059F7-749B-4712-BA47-2153C562F903</_IDOfAssociatedLiquidClassInPool>
+
+                <LastLiquidClassUsed>807059F7-749B-4712-BA47-2153C562F903</LastLiquidClassUsed>
+
+                <ZInSpeed>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </ZInSpeed>
+
+                <ZOutSpeed>
+
+                  <_DirectValue>0</_DirectValue>
+
+                  <_Variable>[[[[---NONE---]]]]</_Variable>
+
+                </ZOutSpeed>
+
+                <TipsPosStrategy>0</TipsPosStrategy>
+
+                <TipsPosInLL>1</TipsPosInLL>
+
+                <LLDDetectionType>0</LLDDetectionType>
+
+                <LLDErrorRecovery>0</LLDErrorRecovery>
+
+                <UserSpecifiedVol>0</UserSpecifiedVol>
+
+                <MoveRelativeToLL>0</MoveRelativeToLL>
+
+                <Z8CannulaLLD>
+
+                  <Cannula1>-1</Cannula1>
+
+                  <Cannula2>-1</Cannula2>
+
+                  <Cannula3>-1</Cannula3>
+
+                  <Cannula4>-1</Cannula4>
+
+                  <Cannula5>-1</Cannula5>
+
+                  <Cannula6>-1</Cannula6>
+
+                  <Cannula7>-1</Cannula7>
+
+                  <Cannula8>-1</Cannula8>
+
+                </Z8CannulaLLD>
+
+              </AspirateDispenseInstr>
+
+            </MixAspirateInstr>
+
+            <TipTouch>0</TipTouch>
+
+            <TipTouchDelay>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </TipTouchDelay>
+
+            <TipTouchLoc>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </TipTouchLoc>
+
+            <RaiseAfterOp>0</RaiseAfterOp>
+
+            <DispenseWellTravel>0</DispenseWellTravel>
+
+            <DispenseWellTravel2>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </DispenseWellTravel2>
+
+            <Cycles>
+
+              <_DirectValue>10</_DirectValue>
+
+              <_Variable>9D3C8D85-52DB-4917-BCDC-74CEDA7564B6</_Variable>
+
+            </Cycles>
+
+            <FinalCycleSpeed>
+
+              <_DirectValue>40.5</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </FinalCycleSpeed>
+
+            <LeadingAirGap>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </LeadingAirGap>
+
+            <FinalCycleDelay>
+
+              <_DirectValue>0</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </FinalCycleDelay>
+
+            <FinalCycleDispenseAll>
+
+              <_DirectValue>-1</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </FinalCycleDispenseAll>
+
+          </MixInstr>
+
+        </Instruction4>
+
+        <Instruction5>
+
+          <InstructionType>1</InstructionType>
+
+          <LineTag></LineTag>
+
+          <ErrorHandler></ErrorHandler>
+
+          <RetryCount>0</RetryCount>
+
+          <IsComment>0</IsComment>
+
+          <Breakpoint>0</Breakpoint>
+
+          <DCCControl>Sciclone</DCCControl>
+
+          <InstructionDesignation>Eject Tips</InstructionDesignation>
+
+          <LoadEjectTipsInstr>
+
+            <DeckParamter>
+
+              <DeckVariableID>7EDD3B42-B7F8-4E8A-82FD-A1FD43EF5561</DeckVariableID>
+
+            </DeckParamter>
+
+            <SelectedPlateCol>
+
+              <_DirectValue>1</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </SelectedPlateCol>
+
+            <SelectedPlateRow>
+
+              <_DirectValue>1</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </SelectedPlateRow>
+
+            <PlateLayout>
+
+              <SelectedPlateRow>
+
+                <_DirectValue>1</_DirectValue>
+
+                <_Variable>[[[[---NONE---]]]]</_Variable>
+
+              </SelectedPlateRow>
+
+              <SelectedPlateCol>
+
+                <_DirectValue>1</_DirectValue>
+
+                <_Variable>[[[[---NONE---]]]]</_Variable>
+
+              </SelectedPlateCol>
+
+              <HeadRefMandrel>
+
+                <_DirectValue>1</_DirectValue>
+
+                <_Variable>[[[[---NONE---]]]]</_Variable>
+
+              </HeadRefMandrel>
+
+              <HeadApproach>1</HeadApproach>
+
+              <Quadrant>0</Quadrant>
+
+            </PlateLayout>
+
+            <InstructionType>1</InstructionType>
+
+            <HeadType>14</HeadType>
+
+            <HeadApproach>1</HeadApproach>
+
+            <Z8Cannulas>
+
+              <Z8Cannula1>-1</Z8Cannula1>
+
+              <Z8Cannula2>-1</Z8Cannula2>
+
+              <Z8Cannula3>-1</Z8Cannula3>
+
+              <Z8Cannula4>-1</Z8Cannula4>
+
+              <Z8Cannula5>-1</Z8Cannula5>
+
+              <Z8Cannula6>-1</Z8Cannula6>
+
+              <Z8Cannula7>-1</Z8Cannula7>
+
+              <Z8Cannula8>-1</Z8Cannula8>
+
+            </Z8Cannulas>
+
+            <Z8SelectionType>1</Z8SelectionType>
+
+            <Z8SelectionValue>
+
+              <_DirectValue>255</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </Z8SelectionValue>
+
+            <ArrayType>0</ArrayType>
+
+            <PressStationIO>8</PressStationIO>
+
+            <PressStationApproach>-1</PressStationApproach>
+
+            <Quadrant>0</Quadrant>
+
+            <PSDelayAfterRaise>
+
+              <_DirectValue>12</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </PSDelayAfterRaise>
+
+            <PSDelayAfterLower>
+
+              <_DirectValue>4</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </PSDelayAfterLower>
+
+            <EjectTipsCycles>
+
+              <_DirectValue>2</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </EjectTipsCycles>
+
+            <NewLVHTipsLoadOffset>
+
+              <_DirectValue>2</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </NewLVHTipsLoadOffset>
+
+            <NewLVHTipsLoadDelay>
+
+              <_DirectValue>0.5</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </NewLVHTipsLoadDelay>
+
+            <NewLVHTipsLoadCycles>
+
+              <_DirectValue>2</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </NewLVHTipsLoadCycles>
+
+            <NewLVHTipsLoadDwell>
+
+              <_DirectValue>5</_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </NewLVHTipsLoadDwell>
+
+            <DeckLocation>
+
+              <_DirectValue></_DirectValue>
+
+              <_Variable>[[[[---NONE---]]]]</_Variable>
+
+            </DeckLocation>
+
+          </LoadEjectTipsInstr>
+
+        </Instruction5>
+
+      </Method1>
+
+    </Methods>
+
+    <GuideData>
+
+      <GuideDataCount>7</GuideDataCount>
+
+      <LabwareModel1>
+
+        <EndOfProtocolAction></EndOfProtocolAction>
+
+        <Height>24.4</Height>
+
+        <LabwareDeckImageFileName>Plate-Adapter Support Tile.PNG</LabwareDeckImageFileName>
+
+        <LabwareFileName>Plate-Adapter Support Tile</LabwareFileName>
+
+        <LabwareID></LabwareID>
+
+        <LabwareImageFileName>Plate-Adapter Support Tile_Hero.PNG</LabwareImageFileName>
+
+        <LabwareInstanceName>Consumable_Plate-Adapter Support Tile</LabwareInstanceName>
+
+        <LabwareName>Plate-Adapter Support Tile</LabwareName>
+
+        <Length>98.15</Length>
+
+        <Note></Note>
+
+        <NumPositions>0</NumPositions>
+
+        <OnDeckAtStartOfProtocol>-1</OnDeckAtStartOfProtocol>
+
+        <PartNumber></PartNumber>
+
+        <Position>C3</Position>
+
+        <Rotation>0</Rotation>
+
+        <StorageLocation>N/A</StorageLocation>
+
+        <SupportedLabwareHeight>0</SupportedLabwareHeight>
+
+        <SupportFileName></SupportFileName>
+
+        <SupportInstanceName></SupportInstanceName>
+
+        <SupportName></SupportName>
+
+        <Vendor></Vendor>
+
+        <Width>137</Width>
+
+        <X>412.48</X>
+
+        <Y>291.3</Y>
+
+        <Z>0</Z>
+
+      </LabwareModel1>
+
+      <LabwareModel2>
+
+        <EndOfProtocolAction></EndOfProtocolAction>
+
+        <Height>60.38</Height>
+
+        <LabwareDeckImageFileName>Caliper-NGS-96-Tip-Box.PNG</LabwareDeckImageFileName>
+
+        <LabwareFileName></LabwareFileName>
+
+        <LabwareID>5917e9be-ef73-403a-baeb-ff779944598e</LabwareID>
+
+        <LabwareImageFileName>Caliper-NGS-96-Tip-Box_Hero.PNG</LabwareImageFileName>
+
+        <LabwareInstanceName>Consumable</LabwareInstanceName>
+
+        <LabwareName>100ul &amp; 200ul SBS Footprint</LabwareName>
+
+        <Length>85.41</Length>
+
+        <Note>100ul &amp; 200ul SBS Footprint</Note>
+
+        <NumPositions>0</NumPositions>
+
+        <OnDeckAtStartOfProtocol>-1</OnDeckAtStartOfProtocol>
+
+        <PartNumber>6000677</PartNumber>
+
+        <Position>C3</Position>
+
+        <Rotation>0</Rotation>
+
+        <StorageLocation>N/A</StorageLocation>
+
+        <SupportedLabwareHeight>0</SupportedLabwareHeight>
+
+        <SupportFileName>Consumable_Plate-Adapter Support Tile</SupportFileName>
+
+        <SupportInstanceName>Plate-Adapter Support Tile</SupportInstanceName>
+
+        <SupportName>Plate-Adapter Support Tile</SupportName>
+
+        <Vendor>PerkinElmer</Vendor>
+
+        <Width>127.72</Width>
+
+        <X>418.48</X>
+
+        <Y>291.3</Y>
+
+        <Z>0</Z>
+
+      </LabwareModel2>
+
+      <LabwareModel3>
+
+        <EndOfProtocolAction></EndOfProtocolAction>
+
+        <Height>24.4</Height>
+
+        <LabwareDeckImageFileName>Plate-Adapter Support Tile.PNG</LabwareDeckImageFileName>
+
+        <LabwareFileName>Plate-Adapter Support Tile</LabwareFileName>
+
+        <LabwareID></LabwareID>
+
+        <LabwareImageFileName>Plate-Adapter Support Tile_Hero.PNG</LabwareImageFileName>
+
+        <LabwareInstanceName>Consumable(1)_Plate-Adapter Support Tile</LabwareInstanceName>
+
+        <LabwareName>Plate-Adapter Support Tile</LabwareName>
+
+        <Length>98.15</Length>
+
+        <Note></Note>
+
+        <NumPositions>0</NumPositions>
+
+        <OnDeckAtStartOfProtocol>-1</OnDeckAtStartOfProtocol>
+
+        <PartNumber></PartNumber>
+
+        <Position>B4</Position>
+
+        <Rotation>0</Rotation>
+
+        <StorageLocation>N/A</StorageLocation>
+
+        <SupportedLabwareHeight>0</SupportedLabwareHeight>
+
+        <SupportFileName></SupportFileName>
+
+        <SupportInstanceName></SupportInstanceName>
+
+        <SupportName></SupportName>
+
+        <Vendor></Vendor>
+
+        <Width>137</Width>
+
+        <X>552.18</X>
+
+        <Y>189.7</Y>
+
+        <Z>0</Z>
+
+      </LabwareModel3>
+
+      <LabwareModel4>
+
+        <EndOfProtocolAction></EndOfProtocolAction>
+
+        <Height>19.9</Height>
+
+        <LabwareDeckImageFileName>96 Well (default).PNG</LabwareDeckImageFileName>
+
+        <LabwareFileName></LabwareFileName>
+
+        <LabwareID>0a49dfe7-8242-4858-892c-c11fdba37677</LabwareID>
+
+        <LabwareImageFileName>96 Well (default)_Hero.PNG</LabwareImageFileName>
+
+        <LabwareInstanceName>Consumable(1)</LabwareInstanceName>
+
+        <LabwareName>Generic SBS Plate 96</LabwareName>
+
+        <Length>85.46</Length>
+
+        <Note></Note>
+
+        <NumPositions>0</NumPositions>
+
+        <OnDeckAtStartOfProtocol>-1</OnDeckAtStartOfProtocol>
+
+        <PartNumber></PartNumber>
+
+        <Position>B4</Position>
+
+        <Rotation>0</Rotation>
+
+        <StorageLocation>N/A</StorageLocation>
+
+        <SupportedLabwareHeight>0</SupportedLabwareHeight>
+
+        <SupportFileName>Consumable(1)_Plate-Adapter Support Tile</SupportFileName>
+
+        <SupportInstanceName>Plate-Adapter Support Tile</SupportInstanceName>
+
+        <SupportName>Plate-Adapter Support Tile</SupportName>
+
+        <Vendor></Vendor>
+
+        <Width>126.8</Width>
+
+        <X>558.18</X>
+
+        <Y>189.7</Y>
+
+        <Z>0</Z>
+
+      </LabwareModel4>
+
+      <LabwareModel5>
+
+        <EndOfProtocolAction></EndOfProtocolAction>
+
+        <Height>24.4</Height>
+
+        <LabwareDeckImageFileName>Plate-Adapter Support Tile.PNG</LabwareDeckImageFileName>
+
+        <LabwareFileName>Plate-Adapter Support Tile</LabwareFileName>
+
+        <LabwareID></LabwareID>
+
+        <LabwareImageFileName>Plate-Adapter Support Tile_Hero.PNG</LabwareImageFileName>
+
+        <LabwareInstanceName>Consumable(2)_Plate-Adapter Support Tile</LabwareInstanceName>
+
+        <LabwareName>Plate-Adapter Support Tile</LabwareName>
+
+        <Length>98.15</Length>
+
+        <Note></Note>
+
+        <NumPositions>0</NumPositions>
+
+        <OnDeckAtStartOfProtocol>-1</OnDeckAtStartOfProtocol>
+
+        <PartNumber></PartNumber>
+
+        <Position>C4</Position>
+
+        <Rotation>0</Rotation>
+
+        <StorageLocation>N/A</StorageLocation>
+
+        <SupportedLabwareHeight>0</SupportedLabwareHeight>
+
+        <SupportFileName></SupportFileName>
+
+        <SupportInstanceName></SupportInstanceName>
+
+        <SupportName></SupportName>
+
+        <Vendor></Vendor>
+
+        <Width>137</Width>
+
+        <X>552.18</X>
+
+        <Y>291.3</Y>
+
+        <Z>0</Z>
+
+      </LabwareModel5>
+
+      <LabwareModel6>
+
+        <EndOfProtocolAction></EndOfProtocolAction>
+
+        <Height>19.9</Height>
+
+        <LabwareDeckImageFileName>96 Well (default).PNG</LabwareDeckImageFileName>
+
+        <LabwareFileName></LabwareFileName>
+
+        <LabwareID>0a49dfe7-8242-4858-892c-c11fdba37677</LabwareID>
+
+        <LabwareImageFileName>96 Well (default)_Hero.PNG</LabwareImageFileName>
+
+        <LabwareInstanceName>Consumable(2)</LabwareInstanceName>
+
+        <LabwareName>Generic SBS Plate 96</LabwareName>
+
+        <Length>85.46</Length>
+
+        <Note></Note>
+
+        <NumPositions>0</NumPositions>
+
+        <OnDeckAtStartOfProtocol>-1</OnDeckAtStartOfProtocol>
+
+        <PartNumber></PartNumber>
+
+        <Position>C4</Position>
+
+        <Rotation>0</Rotation>
+
+        <StorageLocation>N/A</StorageLocation>
+
+        <SupportedLabwareHeight>0</SupportedLabwareHeight>
+
+        <SupportFileName>Consumable(2)_Plate-Adapter Support Tile</SupportFileName>
+
+        <SupportInstanceName>Plate-Adapter Support Tile</SupportInstanceName>
+
+        <SupportName>Plate-Adapter Support Tile</SupportName>
+
+        <Vendor></Vendor>
+
+        <Width>126.8</Width>
+
+        <X>558.18</X>
+
+        <Y>291.3</Y>
+
+        <Z>0</Z>
+
+      </LabwareModel6>
+
+      <LabwareModel7>
+
+        <EndOfProtocolAction></EndOfProtocolAction>
+
+        <Height>40</Height>
+
+        <LabwareDeckImageFileName>Tip Waste Chute.PNG</LabwareDeckImageFileName>
+
+        <LabwareFileName></LabwareFileName>
+
+        <LabwareID>7f4917a1-777c-457b-8b53-920d67d48fd2</LabwareID>
+
+        <LabwareImageFileName>Tip Waste Chute_Hero.PNG</LabwareImageFileName>
+
+        <LabwareInstanceName>Accessory</LabwareInstanceName>
+
+        <LabwareName>Tips Waste Chute</LabwareName>
+
+        <Length>83</Length>
+
+        <Note>Caliper Collection to Waste</Note>
+
+        <NumPositions>0</NumPositions>
+
+        <OnDeckAtStartOfProtocol>-1</OnDeckAtStartOfProtocol>
+
+        <PartNumber></PartNumber>
+
+        <Position>D5</Position>
+
+        <Rotation>0</Rotation>
+
+        <StorageLocation>N/A</StorageLocation>
+
+        <SupportedLabwareHeight>0</SupportedLabwareHeight>
+
+        <SupportFileName></SupportFileName>
+
+        <SupportInstanceName></SupportInstanceName>
+
+        <SupportName></SupportName>
+
+        <Vendor></Vendor>
+
+        <Width>125</Width>
+
+        <X>697.88</X>
+
+        <Y>392.9</Y>
+
+        <Z>0</Z>
+
+      </LabwareModel7>
+
+    </GuideData>
+
+  </Application>
+
+</ExportedApplication>
+
+

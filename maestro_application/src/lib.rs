@@ -875,6 +875,11 @@ impl SavedApplication {
         }
     }
 
+    /// Get all layouts of saved method
+    pub fn layouts(&self) -> &HashMap<Uuid, Layout> {
+        &self.layouts
+    }
+
     /// Local variables of a method
     pub fn local_variables_of_method(&self, method_id: Uuid) -> Option<&HashMap<Uuid, Variable>> {
         self.methods
@@ -949,10 +954,16 @@ pub struct Variable {
     value: VariableValue,
 }
 
-struct Layout {
+pub struct Layout {
     designation: String,
     id: Uuid,
     positions: HashMap<Uuid, Location>,
+}
+
+impl Layout {
+    pub fn position(&self, uuid: Uuid) -> Option<&String> {
+        self.positions.get(&uuid).and_then(|l| Some(&l.position))
+    }
 }
 
 struct Location {
@@ -1136,8 +1147,8 @@ pub struct PositionHead {
 
 #[derive(Debug)]
 pub struct LoadEjectTipsHead {
-    deck_parameter: Option<Uuid>,
-    deck_location: InstructionValue,
+    pub deck_parameter: Option<Uuid>,
+    pub deck_location: InstructionValue,
 }
 
 fn get_float_text(xml: &Node, tag: &str) -> f64 {

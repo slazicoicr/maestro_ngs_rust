@@ -1,55 +1,80 @@
-use maestro_application::{Command, SavedApplication, Variable};
-use std::{collections::HashMap, hash::Hash};
+mod machine;
+
+use crate::machine::{Machine, MachineError};
+use maestro_application::{Command, Layout, SavedApplication, Variable};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 type Result<T> = std::result::Result<T, EmulatorError>;
 
 pub struct Emulator<'a> {
     saved_app: &'a SavedApplication,
-    global_variables: HashMap<Uuid, Variable>,
-    method_stack: Vec<Uuid>,
+    machine: Machine,
     action_executed: Vec<Action<'a>>,
-    instruction_stack: Vec<usize>,
-    param_stack: Vec<HashMap<Uuid, Variable>>,
-    local_variables: HashMap<Uuid, HashMap<Uuid, Variable>>
+    global_variables: HashMap<Uuid, Variable>,
+    layouts: &'a HashMap<Uuid, Layout>,
+    local_variables: HashMap<Uuid, HashMap<Uuid, Variable>>,
+    stack_methods: Vec<Uuid>,
+    stack_instructions: Vec<usize>,
+    stack_params: Vec<HashMap<Uuid, Variable>>,
+    stack_layout: Vec<Uuid>,
 }
 
 impl<'a> Emulator<'a> {
     pub fn new(saved_app: &'a SavedApplication) -> Result<Self> {
         let mut emu = Emulator {
             saved_app,
-            global_variables: saved_app.global_variables().clone(),
-            method_stack: Vec::new(),
+            machine: Machine::new(),
             action_executed: Vec::new(),
-            instruction_stack: Vec::new(),
-            param_stack: Vec::new(),
+            global_variables: saved_app.global_variables().clone(),
+            layouts: saved_app.layouts(),
+            stack_methods: Vec::new(),
+            stack_instructions: Vec::new(),
+            stack_params: Vec::new(),
             local_variables: HashMap::new(),
+            stack_layout: Vec::new(),
         };
 
         let uuid = saved_app.start_method();
-        emu.method_stack.push(uuid);
 
-        let saved_param = saved_app
-            .parameters_of_method(uuid)
-            .cloned()
-            .ok_or(EmulatorError::UnknownMethod(uuid))?;
-        emu.param_stack.push(saved_param);
-
-        for &uuid in saved_app.ids_methods() {
-            let local = saved_app.local_variables_of_method(uuid).ok_or(EmulatorError::UnknownMethod(uuid))?;
+        for &uuid in emu.saved_app.ids_methods() {
+            let local = emu
+                .saved_app
+                .local_variables_of_method(uuid)
+                .ok_or(EmulatorError::UnknownMethod(uuid))?;
             emu.local_variables.insert(uuid, local.clone());
         }
 
-        emu.instruction_stack.push(0);
+        Emulator::push_method(&mut emu, uuid)?;
         Ok(emu)
     }
 
+    fn push_method(emu: &mut Self, uuid: Uuid) -> Result<()> {
+        emu.stack_methods.push(uuid);
+
+        let layout_uuid = emu
+            .saved_app
+            .layout_of_method(uuid)
+            .ok_or(EmulatorError::UnknownMethod(uuid))?;
+        emu.stack_layout.push(layout_uuid);
+
+        let saved_param = emu
+            .saved_app
+            .parameters_of_method(uuid)
+            .cloned()
+            .ok_or(EmulatorError::UnknownMethod(uuid))?;
+        emu.stack_params.push(saved_param);
+
+        emu.stack_instructions.push(0);
+        Ok(())
+    }
+
     pub fn done(&self) -> bool {
-        self.method_stack.len() == 0
+        self.stack_methods.len() == 0
     }
 
     pub fn next(&mut self) -> Result<Option<&Action>> {
-        // Multiple methods may be finished. If a method A is last instruction of method B.
+        // Multiple methods may be finished. If a method A is last instruction of Main method.
         while self.try_finish_method()? {
             continue;
         }
@@ -61,9 +86,9 @@ impl<'a> Emulator<'a> {
         let action = self.build_action()?;
         self.execute_action(&action)?;
         let line = self
-            .instruction_stack
+            .stack_instructions
             .last_mut()
-            .ok_or(EmulatorError::EmptyInstructionStack)?;
+            .ok_or(EmulatorError::EmptyStack)?;
         self.action_executed.push(action);
         *line += 1;
         Ok(Some(self.action_executed.last().unwrap()))
@@ -84,7 +109,7 @@ impl<'a> Emulator<'a> {
         Ok(Action {
             method: method_id,
             line: current_line,
-            skip: !instr.is_comment,
+            skip: instr.is_comment,
             execute: exe,
         })
     }
@@ -92,39 +117,69 @@ impl<'a> Emulator<'a> {
     fn build_execute(&self, command: &'a Command) -> Result<Execute<'a>> {
         match command {
             Command::REM { comment } => Ok(Execute::REM { comment }),
+            Command::LoadTips {
+                load_eject_tips_head,
+            } => match load_eject_tips_head.deck_parameter {
+                Some(uuid) => Ok(Execute::LoadTips {
+                    position: self.get_current_layout_position(uuid)?,
+                }),
+                None => panic!("Did not expect InstructionValue for {:?}", command),
+            },
             _ => panic!("Unknown command {:?}", command),
         }
     }
 
     fn execute_action(&mut self, action: &Action) -> Result<()> {
         if action.skip {
-            return Ok(())
+            return Ok(());
         }
 
         match action.execute {
-            Execute::REM{comment: _} => {},
+            Execute::LoadTips { position } => {
+                self.machine.move_to(position);
+                self.machine.load_tips()?;
+            }
+            Execute::REM { comment: _ } => {}
         }
 
         Ok(())
-        
     }
 
     fn get_current_instruction(&self) -> Result<usize> {
-        self.instruction_stack
+        self.stack_instructions
             .last()
             .cloned()
-            .ok_or(EmulatorError::EmptyMethodStack)
+            .ok_or(EmulatorError::EmptyStack)
+    }
+
+    fn get_current_layout(&self) -> Result<Uuid> {
+        self.stack_layout
+            .last()
+            .cloned()
+            .ok_or(EmulatorError::EmptyStack)
+    }
+
+    fn get_current_layout_position(&self, position_uuid: Uuid) -> Result<&'a String> {
+        let uuid = self.get_current_layout()?;
+        let layout = self
+            .layouts
+            .get(&uuid)
+            .ok_or(EmulatorError::UnknownLayout(uuid))?;
+        let pos = layout
+            .position(position_uuid)
+            .ok_or(EmulatorError::UnknownLayoutPosition(position_uuid))?;
+        Ok(pos)
     }
 
     fn get_current_method(&self) -> Result<Uuid> {
-        self.method_stack
+        self.stack_methods
             .last()
             .cloned()
-            .ok_or(EmulatorError::EmptyMethodStack)
+            .ok_or(EmulatorError::EmptyStack)
     }
 
     fn try_finish_method(&mut self) -> Result<bool> {
-        if let Some(&method_id) = self.method_stack.last() {
+        if let Some(&method_id) = self.stack_methods.last() {
             let current_instr = self.get_current_instruction()?;
             let instr_count = self
                 .saved_app
@@ -142,19 +197,17 @@ impl<'a> Emulator<'a> {
     }
 
     fn pop_method(&mut self) -> Result<()> {
-        self.method_stack
+        self.stack_methods.pop().ok_or(EmulatorError::EmptyStack)?;
+        self.stack_instructions
             .pop()
-            .ok_or(EmulatorError::EmptyMethodStack)?;
-        self.instruction_stack
-            .pop()
-            .ok_or(EmulatorError::EmptyInstructionStack)?;
-        self.param_stack
-            .pop()
-            .ok_or(EmulatorError::EmptyParameterStack)?;
+            .ok_or(EmulatorError::EmptyStack)?;
+        self.stack_params.pop().ok_or(EmulatorError::EmptyStack)?;
+        self.stack_layout.pop().ok_or(EmulatorError::EmptyStack)?;
         Ok(())
     }
 }
 
+#[derive(Debug)]
 pub struct Action<'a> {
     pub method: Uuid,
     pub line: usize,
@@ -162,15 +215,19 @@ pub struct Action<'a> {
     pub execute: Execute<'a>,
 }
 
+#[derive(Debug)]
 pub enum Execute<'a> {
+    // Aspirate { position: &'a str, volume: f64 },
+    LoadTips { position: &'a str },
     REM { comment: &'a str },
 }
 
 #[derive(Debug)]
 pub enum EmulatorError {
-    EmptyInstructionStack,
-    EmptyMethodStack,
-    EmptyParameterStack,
+    EmptyStack,
+    MachineError(MachineError),
+    UnknownLayout(Uuid),
+    UnknownLayoutPosition(Uuid),
     UnknownMethod(Uuid),
     UnknownInstruction(Uuid, usize),
 }
@@ -178,27 +235,46 @@ pub enum EmulatorError {
 impl std::fmt::Display for EmulatorError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            Self::EmptyInstructionStack => {
-                write!(f, "cannot get next instruction as stack is empty")
+            Self::EmptyStack => write!(f, "emulator stack is unexpectendly empty"),
+            Self::MachineError(m) => m.fmt(f),
+            Self::UnknownLayout(uuid) => write!(f, "unknown layout ({})", uuid),
+            Self::UnknownLayoutPosition(uuid) => {
+                write!(f, "unknown layout position variable ({})", uuid)
             }
-            Self::EmptyMethodStack => write!(f, "cannot get next method as stack is empty"),
-            Self::EmptyParameterStack => write!(f, "cannot get parameters as stack is empty"),
-            Self::UnknownMethod(uuid) => write!(f, "unknown method ({})", uuid),
             Self::UnknownInstruction(uuid, line) => write!(
                 f,
                 "instruction line {} does not exist for method {}",
                 line, uuid
             ),
+            Self::UnknownMethod(uuid) => write!(f, "unknown method ({})", uuid),
         }
     }
 }
 
-impl std::error::Error for EmulatorError {}
+impl std::error::Error for EmulatorError {
+    fn source(&self) -> Option<&(dyn std::error::Error + 'static)> {
+        match self {
+            Self::EmptyStack => None,
+            Self::MachineError(m) => Some(m),
+            Self::UnknownLayout(_) => None,
+            Self::UnknownLayoutPosition(_) => None,
+            Self::UnknownInstruction(_, _) => None,
+            Self::UnknownMethod(_) => None,
+        }
+    }
+}
+
+impl From<MachineError> for EmulatorError {
+    fn from(error: MachineError) -> Self {
+        EmulatorError::MachineError(error)
+    }
+}
+
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use maestro_application::Loader; 
+    use maestro_application::Loader;
 
     fn load_empty_app() -> String {
         let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -207,28 +283,41 @@ mod tests {
         std::fs::read_to_string(d).unwrap()
     }
 
-    fn load_complex_app() -> String {
+    fn load_pipette_and_mix_app() -> String {
         let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-        d.push("resources/test/Application_Complex.eap");
+        d.push("resources/test/Pipette_and_Mix.eap");
 
         std::fs::read_to_string(d).unwrap()
     }
 
     #[test]
-    fn emulate_empty_app(){
+    fn emulate_empty_app() {
         let app = Loader::new(&load_empty_app()).build_application();
         let mut emu = Emulator::new(&app).unwrap();
         let uuid = "3AC47C04-DCCE-4036-8F9F-6AD7D530E220".parse().unwrap();
-        assert_eq!(emu.method_stack.len(), 1);
-        assert_eq!(emu.method_stack[0], uuid);
+        assert_eq!(emu.stack_methods.len(), 1);
+        assert_eq!(emu.stack_methods[0], uuid);
         assert_eq!(emu.global_variables.len(), 0);
-        assert_eq!(emu.param_stack.len(), 1);
-        assert_eq!(emu.param_stack[0].len(), 0);
+        assert_eq!(emu.stack_params.len(), 1);
+        assert_eq!(emu.stack_params[0].len(), 0);
         assert_eq!(emu.local_variables.len(), 1);
         assert_eq!(emu.local_variables.get(&uuid).unwrap().len(), 0);
 
         let step = emu.next().unwrap();
         assert!(step.is_none());
         assert!(emu.done());
+    }
+
+    #[test]
+    fn emulate_pipette_and_mix_app() {
+        let app = Loader::new(&load_pipette_and_mix_app()).build_application();
+        let mut emu = Emulator::new(&app).unwrap();
+
+        let mut step = emu.next().unwrap();
+        assert!(step.is_some());
+        assert_eq!(emu.machine.deck_location, Some("C3".to_string()));
+        assert!(emu.machine.tips_loaded);
+
+        step = emu.next().unwrap();
     }
 }
