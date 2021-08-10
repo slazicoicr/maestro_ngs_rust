@@ -1,5 +1,5 @@
 use roxmltree::{Document, Node};
-use std::{collections::HashMap, hash::Hash};
+use std::{collections::HashMap};
 use uuid::Uuid;
 
 const APP: &str = "Application";
@@ -20,8 +20,6 @@ const LOCAL_VAR_POOL: &str = "LocalVariablesPool";
 const METHODS: &str = "Methods";
 const METHODS_COUNT: &str = "MethodsCount";
 const METHOD_DESIG: &str = "MethodDesignation";
-const PARAM_TYPE: &str = "ParameterType";
-const PARAM_ID: &str = "ForParameter";
 const PARAMS: &str = "Parameters";
 const PROGRAM_ID: &str = "ProgramID";
 const START_METHOD: &str = "StartupMethod";
@@ -806,7 +804,7 @@ impl<'a> Loader<'a> {
 /// ```
 /// // Read the XML string of an empty application
 /// let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-/// d.push("resources/test/Applications_Empty.eap");
+/// d.push("resources/test/Application_Empty.eap");
 /// let empty_app = std::fs::read_to_string(d).unwrap();
 ///
 ///let app = maestro_application::Loader::new(&empty_app).build_application();
@@ -1128,8 +1126,8 @@ pub enum Comparator {
 
 #[derive(Debug)]
 pub struct InstructionValue {
-    direct: VariableValue,
-    variable: Option<Uuid>,
+    pub direct: VariableValue,
+    pub variable: Option<Uuid>,
 }
 
 #[derive(Debug)]
@@ -1140,9 +1138,9 @@ pub struct Parameter {
 
 #[derive(Debug)]
 pub struct PositionHead {
-    deck_parameter: Option<Uuid>,
-    deck_location: InstructionValue,
-    z_offset: InstructionValue,
+    pub deck_parameter: Option<Uuid>,
+    pub deck_location: InstructionValue,
+    pub z_offset: InstructionValue,
 }
 
 #[derive(Debug)]

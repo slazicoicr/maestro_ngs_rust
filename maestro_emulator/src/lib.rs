@@ -1,7 +1,10 @@
 mod machine;
 
 use crate::machine::{Machine, MachineError};
-use maestro_application::{Command, Layout, SavedApplication, Variable};
+use maestro_application::{
+    Command, InstructionValue, Layout, LoadEjectTipsHead, PositionHead, SavedApplication, Variable,
+    VariableValue,
+};
 use std::collections::HashMap;
 use uuid::Uuid;
 
@@ -116,15 +119,50 @@ impl<'a> Emulator<'a> {
 
     fn build_execute(&self, command: &'a Command) -> Result<Execute<'a>> {
         match command {
-            Command::REM { comment } => Ok(Execute::REM { comment }),
+            Command::Aspirate {
+                position_head,
+                volume,
+            } => {
+                let position = self.get_position_positionhead(position_head)?;
+                let vol = self.get_instruction_value_float(volume)?;
+                Ok(Execute::Aspirate {
+                    position,
+                    volume: vol,
+                })
+            }
+            Command::Dispense {
+                position_head,
+                volume,
+                dispense_all,
+            } => {
+                let position = self.get_position_positionhead(position_head)?;
+                let vol = if *dispense_all {
+                    self.machine.get_tip_volume()
+                } else {
+                    self.get_instruction_value_float(volume)?
+                };
+                Ok(Execute::Dispense {
+                    position,
+                    volume: vol,
+                })
+            }
+            Command::EjectTips {
+                load_eject_tips_head
+            } => {
+                let position = self.get_position_loadeject_tip_head(load_eject_tips_head)?;
+                Ok(Execute::EjectTips { position })
+            }
             Command::LoadTips {
                 load_eject_tips_head,
-            } => match load_eject_tips_head.deck_parameter {
-                Some(uuid) => Ok(Execute::LoadTips {
-                    position: self.get_current_layout_position(uuid)?,
-                }),
-                None => panic!("Did not expect InstructionValue for {:?}", command),
-            },
+            } => {
+                let position = self.get_position_loadeject_tip_head(load_eject_tips_head)?;
+                Ok(Execute::LoadTips { position })
+            }
+            Command::Mix { position_head } => {
+                let position = self.get_position_positionhead(position_head)?;
+                Ok(Execute::Mix { position })
+            }
+            Command::REM { comment } => Ok(Execute::REM { comment }),
             _ => panic!("Unknown command {:?}", command),
         }
     }
@@ -135,9 +173,24 @@ impl<'a> Emulator<'a> {
         }
 
         match action.execute {
+            Execute::Aspirate { position, volume } => {
+                self.machine.move_to(position);
+                self.machine.aspirate(volume)?;
+            }
+            Execute::Dispense { position, volume } => {
+                self.machine.move_to(position);
+                self.machine.dispense(volume)?;
+            }
+            Execute::EjectTips {position} => {
+                self.machine.move_to(position);
+                self.machine.eject_tips();
+            }
             Execute::LoadTips { position } => {
                 self.machine.move_to(position);
                 self.machine.load_tips()?;
+            }
+            Execute::Mix { position } => {
+                self.machine.move_to(position);
             }
             Execute::REM { comment: _ } => {}
         }
@@ -176,6 +229,37 @@ impl<'a> Emulator<'a> {
             .last()
             .cloned()
             .ok_or(EmulatorError::EmptyStack)
+    }
+
+    fn get_instruction_value_float(&self, inst: &'a InstructionValue) -> Result<f64> {
+        if inst.variable.is_some() {
+            panic!("Can't deal with variable in InstructionValue {:?}", inst)
+        }
+
+        match inst.direct {
+            VariableValue::Float(f) => Ok(f),
+            _ => Err(EmulatorError::UnexpectedType),
+        }
+    }
+
+    fn get_position_positionhead(&self, pos: &'a PositionHead) -> Result<&'a String> {
+        match pos.deck_parameter {
+            Some(uuid) => Ok(self.get_current_layout_position(uuid)?),
+            None => panic!(
+                "Did not expect InstructionValue for {:?}",
+                pos.deck_location
+            ),
+        }
+    }
+
+    fn get_position_loadeject_tip_head(&self, pos: &'a LoadEjectTipsHead) -> Result<&'a String> {
+        match pos.deck_parameter {
+            Some(uuid) => Ok(self.get_current_layout_position(uuid)?),
+            None => panic!(
+                "Did not expect InstructionValue for {:?}",
+                pos.deck_location
+            ),
+        }
     }
 
     fn try_finish_method(&mut self) -> Result<bool> {
@@ -217,8 +301,11 @@ pub struct Action<'a> {
 
 #[derive(Debug)]
 pub enum Execute<'a> {
-    // Aspirate { position: &'a str, volume: f64 },
+    Aspirate { position: &'a str, volume: f64 },
+    Dispense { position: &'a str, volume: f64 },
+    EjectTips { position: &'a str },
     LoadTips { position: &'a str },
+    Mix { position: &'a str },
     REM { comment: &'a str },
 }
 
@@ -226,6 +313,7 @@ pub enum Execute<'a> {
 pub enum EmulatorError {
     EmptyStack,
     MachineError(MachineError),
+    UnexpectedType,
     UnknownLayout(Uuid),
     UnknownLayoutPosition(Uuid),
     UnknownMethod(Uuid),
@@ -237,6 +325,7 @@ impl std::fmt::Display for EmulatorError {
         match self {
             Self::EmptyStack => write!(f, "emulator stack is unexpectendly empty"),
             Self::MachineError(m) => m.fmt(f),
+            Self::UnexpectedType => write!(f, "unexpected variable type"),
             Self::UnknownLayout(uuid) => write!(f, "unknown layout ({})", uuid),
             Self::UnknownLayoutPosition(uuid) => {
                 write!(f, "unknown layout position variable ({})", uuid)
@@ -256,6 +345,7 @@ impl std::error::Error for EmulatorError {
         match self {
             Self::EmptyStack => None,
             Self::MachineError(m) => Some(m),
+            Self::UnexpectedType => None,
             Self::UnknownLayout(_) => None,
             Self::UnknownLayoutPosition(_) => None,
             Self::UnknownInstruction(_, _) => None,
@@ -269,7 +359,6 @@ impl From<MachineError> for EmulatorError {
         EmulatorError::MachineError(error)
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -313,11 +402,36 @@ mod tests {
         let app = Loader::new(&load_pipette_and_mix_app()).build_application();
         let mut emu = Emulator::new(&app).unwrap();
 
+        // Load tips
         let mut step = emu.next().unwrap();
         assert!(step.is_some());
-        assert_eq!(emu.machine.deck_location, Some("C3".to_string()));
-        assert!(emu.machine.tips_loaded);
+        assert_eq!(emu.machine.get_deck_location(), Some(&"C3".to_string()));
+        assert!(emu.machine.get_tips_loaded());
+
+        // Aspirate 100 uL
+        step = emu.next().unwrap();
+        assert!(step.is_some());
+        assert_eq!(emu.machine.get_deck_location(), Some(&"C4".to_string()));
+        assert_eq!(emu.machine.get_tip_volume(), 100.0);
+
+        // Dispense
+        step = emu.next().unwrap();
+        assert!(step.is_some());
+        assert_eq!(emu.machine.get_deck_location(), Some(&"B4".to_string()));
+        assert_eq!(emu.machine.get_tip_volume(), 0.0);
+
+        // Mix
+        step = emu.next().unwrap();
+        assert!(step.is_some());
+        assert_eq!(emu.machine.get_deck_location(), Some(&"B4".to_string()));
 
         step = emu.next().unwrap();
+        assert!(step.is_some());
+        assert_eq!(emu.machine.get_deck_location(), Some(&"D5".to_string()));
+        assert!(!emu.machine.get_tips_loaded());
+
+        step = emu.next().unwrap();
+        assert!(step.is_none());
+        assert!(emu.done());
     }
 }
