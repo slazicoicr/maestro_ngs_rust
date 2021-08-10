@@ -807,7 +807,7 @@ impl<'a> Loader<'a> {
 /// d.push("resources/test/Application_Empty.eap");
 /// let empty_app = std::fs::read_to_string(d).unwrap();
 ///
-///let app = maestro_application::Loader::new(&empty_app).build_application();
+///let app = maestro_ngs_application::Loader::new(&empty_app).build_application();
 /// ```
 ///
 pub struct SavedApplication {

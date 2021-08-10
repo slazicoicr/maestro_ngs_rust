@@ -1,6 +1,6 @@
 [workspace]
 
 members = [
-    "maestro_application",
-    "maestro_emulator",
+    "maestro_ngs_application",
+    "maestro_ngs_emulator",
 ]

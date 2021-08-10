@@ -1,7 +1,7 @@
 mod machine;
 
 use crate::machine::{Machine, MachineError};
-use maestro_application::{
+use maestro_ngs_application::{
     Command, InstructionValue, Layout, LoadEjectTipsHead, PositionHead, SavedApplication, Variable,
     VariableValue,
 };
@@ -363,7 +363,7 @@ impl From<MachineError> for EmulatorError {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use maestro_application::Loader;
+    use maestro_ngs_application::Loader;
 
     fn load_empty_app() -> String {
         let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
