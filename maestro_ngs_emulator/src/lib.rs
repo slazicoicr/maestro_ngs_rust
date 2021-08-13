@@ -1,19 +1,20 @@
 mod machine;
 
-use crate::machine::{Machine, MachineError};
+use machine::{Execute, Machine, MachineError, ScicloneG3};
 use maestro_ngs_application::{
     Command, InstructionValue, Layout, LoadEjectTipsHead, PositionHead, SavedApplication, Variable,
     VariableValue,
 };
-use std::collections::HashMap;
 use serde::{self, ser::SerializeStruct};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 type Result<T> = std::result::Result<T, EmulatorError>;
+type ScicloneG3Emulator<'a> = Emulator<'a, ScicloneG3>;
 
-pub struct Emulator<'a> {
+pub struct Emulator<'a, M: Machine> {
     saved_app: &'a SavedApplication,
-    machine: Machine,
+    machine: M,
     action_executed: Vec<Action<'a>>,
     global_variables: HashMap<Uuid, Variable>,
     layouts: &'a HashMap<Uuid, Layout>,
@@ -24,11 +25,11 @@ pub struct Emulator<'a> {
     stack_layout: Vec<Uuid>,
 }
 
-impl<'a> Emulator<'a> {
+impl<'a, M: Machine> Emulator<'a, M> {
     pub fn new(saved_app: &'a SavedApplication) -> Result<Self> {
         let mut emu = Emulator {
             saved_app,
-            machine: Machine::new(),
+            machine: M::new(),
             action_executed: Vec::new(),
             global_variables: saved_app.global_variables().clone(),
             layouts: saved_app.layouts(),
@@ -138,9 +139,9 @@ impl<'a> Emulator<'a> {
             } => {
                 let position = self.get_position_positionhead(position_head)?;
                 let vol = if *dispense_all {
-                    self.machine.get_tip_volume()
+                    None
                 } else {
-                    self.get_instruction_value_float(volume)?
+                    Some(self.get_instruction_value_float(volume)?)
                 };
                 Ok(Execute::Dispense {
                     position,
@@ -148,7 +149,7 @@ impl<'a> Emulator<'a> {
                 })
             }
             Command::EjectTips {
-                load_eject_tips_head
+                load_eject_tips_head,
             } => {
                 let position = self.get_position_loadeject_tip_head(load_eject_tips_head)?;
                 Ok(Execute::EjectTips { position })
@@ -173,29 +174,7 @@ impl<'a> Emulator<'a> {
             return Ok(());
         }
 
-        match action.execute {
-            Execute::Aspirate { position, volume } => {
-                self.machine.move_to(position);
-                self.machine.aspirate(volume)?;
-            }
-            Execute::Dispense { position, volume } => {
-                self.machine.move_to(position);
-                self.machine.dispense(volume)?;
-            }
-            Execute::EjectTips {position} => {
-                self.machine.move_to(position);
-                self.machine.eject_tips();
-            }
-            Execute::LoadTips { position } => {
-                self.machine.move_to(position);
-                self.machine.load_tips()?;
-            }
-            Execute::Mix { position } => {
-                self.machine.move_to(position);
-            }
-            Execute::REM { comment: _ } => {}
-        }
-
+        self.machine.execute(&action.execute)?;
         Ok(())
     }
 
@@ -314,16 +293,6 @@ impl<'a> serde::Serialize for Action<'a> {
     }
 }
 
-#[derive(Debug, serde::Serialize)]
-pub enum Execute<'a> {
-    Aspirate { position: &'a str, volume: f64 },
-    Dispense { position: &'a str, volume: f64 },
-    EjectTips { position: &'a str },
-    LoadTips { position: &'a str },
-    Mix { position: &'a str },
-    REM { comment: &'a str },
-}
-
 #[derive(Debug)]
 pub enum EmulatorError {
     EmptyStack,
@@ -375,7 +344,6 @@ impl From<MachineError> for EmulatorError {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -398,7 +366,7 @@ mod tests {
     #[test]
     fn emulate_empty_app() {
         let app = Loader::new(&load_empty_app()).build_application();
-        let mut emu = Emulator::new(&app).unwrap();
+        let mut emu = ScicloneG3Emulator::new(&app).unwrap();
         let uuid = "3AC47C04-DCCE-4036-8F9F-6AD7D530E220".parse().unwrap();
         assert_eq!(emu.stack_methods.len(), 1);
         assert_eq!(emu.stack_methods[0], uuid);
@@ -416,7 +384,7 @@ mod tests {
     #[test]
     fn emulate_pipette_and_mix_app() {
         let app = Loader::new(&load_pipette_and_mix_app()).build_application();
-        let mut emu = Emulator::new(&app).unwrap();
+        let mut emu = ScicloneG3Emulator::new(&app).unwrap();
 
         // Load tips
         let mut step = emu.next().unwrap();

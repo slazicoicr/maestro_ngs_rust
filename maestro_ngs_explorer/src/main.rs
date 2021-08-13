@@ -11,9 +11,11 @@ lazy_static::lazy_static! {
 
 #[rocket::get("/count")]
 fn count(hit_count: &rocket::State<&ARRAY>) -> String {
-    format!("This is request #{}.", hit_count.lock().unwrap().as_ref().unwrap().start_method())
+    format!(
+        "This is request #{}.",
+        hit_count.lock().unwrap().as_ref().unwrap().start_method()
+    )
 }
-
 
 fn load_app() -> Result<(), std::io::Error> {
     let mut d = std::path::PathBuf::from(env!("CARGO_MANIFEST_DIR"));
@@ -29,7 +31,7 @@ fn load_app() -> Result<(), std::io::Error> {
 #[rocket::main]
 async fn main() {
     match load_app() {
-        Ok(_) => {},
+        Ok(_) => {}
         Err(e) => {
             eprintln!("error: {:?}", e);
             std::process::exit(1);

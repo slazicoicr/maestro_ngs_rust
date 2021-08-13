@@ -1,28 +1,68 @@
-pub struct Machine {
-    deck_location: Option<String>,
-    tips_loaded: bool,
-    tip_volume: f64,
-}
-
 type Result<T> = std::result::Result<T, MachineError>;
 
-impl Machine {
-    pub fn new() -> Self {
-        Machine {
+pub trait Machine {
+    fn new() -> Self;
+    fn execute(&mut self, exe: &Execute) -> Result<()>;
+}
+
+impl Machine for ScicloneG3 {
+
+    fn new() -> Self {
+        ScicloneG3 {
             deck_location: None,
             tips_loaded: false,
             tip_volume: 0.0,
         }
     }
 
-    pub fn aspirate(&mut self, volume: f64) -> Result<()>{
+    fn execute(&mut self, exe: &Execute) -> Result<()> {
+        match exe {
+            &Execute::Aspirate { position, volume } => {
+                self.move_to(position);
+                self.aspirate(volume)?;
+            }
+            &Execute::Dispense { position, volume } => {
+                self.move_to(position);
+                self.dispense(volume)?;
+            }
+            &Execute::EjectTips {position} => {
+                self.move_to(position);
+                self.eject_tips();
+            }
+            &Execute::LoadTips { position } => {
+                self.move_to(position);
+                self.load_tips()?;
+            }
+            &Execute::Mix { position } => {
+                self.move_to(position);
+            }
+            &Execute::REM { comment: _ } => {}
+        }
+
+        Ok(())
+    }
+}
+
+pub struct ScicloneG3 {
+    deck_location: Option<String>,
+    tips_loaded: bool,
+    tip_volume: f64,
+}
+
+
+impl ScicloneG3 {
+    pub fn aspirate(&mut self, volume: f64) -> Result<()> {
         self.assert_tips()?;
         self.tip_volume = self.tip_volume + volume;
         Ok(())
     }
 
-    pub fn dispense(&mut self, volume: f64) -> Result<()> {
+    pub fn dispense(&mut self, volume: Option<f64>) -> Result<()> {
         self.assert_tips()?;
+        let volume = match volume {
+            Some(v) => v,
+            None => self.tip_volume
+        };
         if volume > self.tip_volume {
             Err(MachineError::NotEnoughTipVolume)
         } else {
@@ -68,7 +108,17 @@ impl Machine {
             Err(MachineError::NeedTips)
         }
     }
+}
 
+#[derive(Debug, serde::Serialize)]
+pub enum Execute<'a> {
+    Aspirate { position: &'a str, volume: f64 },
+    // If None volume, dispense all
+    Dispense { position: &'a str, volume: Option<f64> },
+    EjectTips { position: &'a str },
+    LoadTips { position: &'a str },
+    Mix { position: &'a str },
+    REM { comment: &'a str },
 }
 
 #[derive(Debug)]
