@@ -6,6 +6,7 @@ use maestro_ngs_application::{
     VariableValue,
 };
 use std::collections::HashMap;
+use serde::{self, ser::SerializeStruct};
 use uuid::Uuid;
 
 type Result<T> = std::result::Result<T, EmulatorError>;
@@ -299,7 +300,21 @@ pub struct Action<'a> {
     pub execute: Execute<'a>,
 }
 
-#[derive(Debug)]
+impl<'a> serde::Serialize for Action<'a> {
+    fn serialize<S>(&self, serializer: S) -> std::result::Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut state = serializer.serialize_struct("Action", 4)?;
+        state.serialize_field("method", &self.method.to_string())?;
+        state.serialize_field("line", &self.line)?;
+        state.serialize_field("skip", &self.skip)?;
+        state.serialize_field("execute", &self.execute)?;
+        state.end()
+    }
+}
+
+#[derive(Debug, serde::Serialize)]
 pub enum Execute<'a> {
     Aspirate { position: &'a str, volume: f64 },
     Dispense { position: &'a str, volume: f64 },
@@ -359,6 +374,7 @@ impl From<MachineError> for EmulatorError {
         EmulatorError::MachineError(error)
     }
 }
+
 
 #[cfg(test)]
 mod tests {

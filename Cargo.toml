@@ -3,4 +3,5 @@
 members = [
     "maestro_ngs_application",
     "maestro_ngs_emulator",
+    "maestro_ngs_explorer",
 ]
